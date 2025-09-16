@@ -4,7 +4,7 @@ import React from "react";
 
 export default function Navbar() {
   return (
-    <nav>
+    <nav className="shadow">
       <Flex justify="between" align="center" px="29px" py="10px">
         <img src={Logo} width="50" height="40" />
         <Flex align="center" gap="5">

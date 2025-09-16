@@ -6,17 +6,14 @@ import { Button, Flex } from "@radix-ui/themes";
 import Navbar from "./component/navbar";
 import Footer from "./component/Footer";
 import Search from "./component/Search";
+import Home from "./pages/Home";
 
 function App() {
   return (
     <>
       <Navbar />
       <div>
-        <Flex justify="center" align="center" direction="column">
-          <Search />
-          <h1>Hello World</h1>
-          <p>Khintil</p>
-        </Flex>
+        <Home />
       </div>
       <Footer />
     </>
