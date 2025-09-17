@@ -48,7 +48,7 @@ export default function Search() {
         </div>
 
         {showFilter && (
-          <div className="mt-3 p-4 border border-yellow-500 rounded-xl bg-gray-50">
+          <div className="mt-3 p-4 border border-yellow-500 rounded-xl bg-transparent">
             <div className="flex flex-col gap-3">
               <h2 className="text-center text-lg font-medium">
                 Filter Pencarian
@@ -58,7 +58,7 @@ export default function Search() {
               <div className="relative w-full">
                 <button
                   onClick={() => setIsOpenMinPrice(!isOpenMinPrice)}
-                  className="w-full flex justify-between items-center rounded-lg border border-blue-500 bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  className="w-full flex justify-between text-black items-center rounded-lg border !border-blue-500 !bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
                 >
                   {selectedMinPrice}
                   <svg
@@ -79,7 +79,7 @@ export default function Search() {
                 </button>
 
                 {isOpenMinPrice && (
-                  <ul className="absolute z-10 mt-2 w-full rounded-lg border border-blue-500 bg-white shadow-lg">
+                  <ul className="absolute z-10 text-black mt-2 w-full rounded-lg border !border-blue-500 !bg-white shadow-lg">
                     {minPrice.map((item, idx) => (
                       <li
                         key={idx}
@@ -101,7 +101,7 @@ export default function Search() {
               <div className="relative w-full">
                 <button
                   onClick={() => setIsOpenMaxPrice(!isOpenMaxPrice)}
-                  className="w-full flex justify-between items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full flex justify-between items-center text-black rounded-lg border !border-blue-500 !bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
                 >
                   {selectedMaxPrice}
                   <svg
@@ -122,7 +122,7 @@ export default function Search() {
                 </button>
 
                 {isOpenMaxPrice && (
-                  <ul className="absolute z-10 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <ul className="absolute z-10 mt-2 w-full text-black rounded-lg border !border-blue-500 !bg-white shadow-lg">
                     {maxPrice.map((item, idx) => (
                       <li
                         key={idx}
@@ -144,7 +144,7 @@ export default function Search() {
               <div className="relative w-full">
                 <button
                   onClick={() => setIsOpenProvince(!isOpenProvince)}
-                  className="w-full flex justify-between items-center rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full flex justify-between text-black items-center rounded-lg border !border-blue-500 !bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
                 >
                   {selectedProvince}
                   <svg
@@ -165,7 +165,7 @@ export default function Search() {
                 </button>
 
                 {isOpenProvince && (
-                  <ul className="absolute z-10 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <ul className="absolute z-10 mt-2 w-full text-black rounded-lg border !border-blue-500 !bg-white shadow-lg">
                     {provinces.map((province, idx) => (
                       <li
                         key={idx}
