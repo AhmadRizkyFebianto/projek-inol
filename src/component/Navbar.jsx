@@ -1,6 +1,7 @@
-import { Box, Flex, Link, TabNav, Text } from "@radix-ui/themes";
+import { Box, Flex,TabNav, Text } from "@radix-ui/themes";
 import Logo from "../assets/logo.png";
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -11,7 +12,7 @@ export default function Navbar() {
           <Link href="#" underline="none" color="gray" highContrast>
             Chatbot
           </Link>
-          <Link href="#" underline="none" color="gray" highContrast>
+          <Link to="/kpr" className="text-gray-600 hover:text-black">
             Beli Rumah
           </Link>
           <Link href="#" underline="none" color="gray" highContrast>
