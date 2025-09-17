@@ -1,5 +1,7 @@
 import Logo from "../assets/logo.png";
 import { React, useState } from "react";
+import Menu from "../assets/menu.png";
+import Close from "../assets/close.png";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,17 +14,7 @@ export default function Navbar() {
 
           <div className="block md:hidden lg:hidden">
             <div onClick={() => setMenuOpen(true)} aria-label="Open Menu">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="35"
-                height="35"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="#000"
-                  d="M3.75 6.5a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 0 1.5h-15a.75.75 0 0 1-.75-.75m0 5.5a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 0 1.5h-15a.75.75 0 0 1-.75-.75m0 5.5a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 0 1.5h-15a.75.75 0 0 1-.75-.75"
-                />
-              </svg>
+              <img src={Menu} width="30" height="30" />
             </div>
           </div>
 
@@ -69,17 +61,7 @@ export default function Navbar() {
       >
         <div className="flex justify-end p-4">
           <div onClick={() => setMenuOpen(false)} aria-label="Close Menu">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="35"
-              height="35"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="#000"
-                d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"
-              />
-            </svg>
+            <img src={Close} width="50" height="50" />
           </div>
         </div>
         <div className="flex flex-col space-y-6 p-6 font-medium text-gray-700">
