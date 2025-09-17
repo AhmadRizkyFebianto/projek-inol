@@ -1,5 +1,5 @@
 import Sidebar from "../component/Sidebar";
-import Navbar from "../component/navbar";
+import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
 
 export default function KprPage() {
