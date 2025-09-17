@@ -1,3 +1,7 @@
+import { Box, Flex,TabNav, Text } from "@radix-ui/themes";
+import Logo from "../assets/logo.png";
+import React from "react";
+import { Link } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { React, useState } from "react";
 import Menu from "../assets/menu.png";
@@ -67,6 +71,8 @@ export default function Navbar() {
         <div className="flex flex-col space-y-6 p-6 font-medium text-gray-700">
           <a href="" className="hover:text-gray-900">
             Chatbot
+          </Link>
+          <Link to="/kpr" className="text-gray-600 hover:text-black">
           </a>
           <a href="" className="hover:text-gray-900">
             Beli Rumah
