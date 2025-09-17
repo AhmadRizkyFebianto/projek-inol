@@ -8,6 +8,8 @@ import { Theme } from "@radix-ui/themes";
 // Router
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import KprPage from "./pages/KprPages.jsx";
+import ChatBot from "./pages/ChatBot.jsx";
+import Profile from "./pages/Profile.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -16,6 +18,8 @@ createRoot(document.getElementById("root")).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/kpr" element={<KprPage />} />
+          <Route path="/chatbot" element={<ChatBot />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </Theme>

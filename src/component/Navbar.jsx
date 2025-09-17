@@ -1,8 +1,6 @@
-import { Box, Flex,TabNav, Text } from "@radix-ui/themes";
+import { Box, Flex, TabNav, Text } from "@radix-ui/themes";
 import Logo from "../assets/logo.png";
-import React from "react";
 import { Link } from "react-router-dom";
-import Logo from "../assets/logo.png";
 import { React, useState } from "react";
 import Menu from "../assets/menu.png";
 import Close from "../assets/close.png";
@@ -14,7 +12,9 @@ export default function Navbar() {
     <>
       <nav className="shadow">
         <div className="flex justify-between items-center px-7 py-2.5">
-          <img src={Logo} width="50" height="40" />
+          <a href="/">
+            <img src={Logo} width="50" height="40" />
+          </a>
 
           <div className="block md:hidden lg:hidden">
             <div onClick={() => setMenuOpen(true)} aria-label="Open Menu">
@@ -24,7 +24,7 @@ export default function Navbar() {
 
           <ul className="lg:flex md:flex hidden gap-5 items-center text-gray-700">
             <li>
-              <a href="" className="hover:text-gray-900">
+              <a href="chatbot" className="hover:text-gray-900">
                 Chatbot
               </a>
             </li>
@@ -34,7 +34,7 @@ export default function Navbar() {
               </a>
             </li>
             <li>
-              <a href="" className="hover:text-gray-900">
+              <a href="/kpr" className="hover:text-gray-900">
                 Hitung KPR
               </a>
             </li>
@@ -65,19 +65,19 @@ export default function Navbar() {
       >
         <div className="flex justify-end p-4">
           <div onClick={() => setMenuOpen(false)} aria-label="Close Menu">
-            <img src={Close} width="50" height="50" />
+            <a href="/">
+              <img src={Close} width="50" height="50" />
+            </a>
           </div>
         </div>
         <div className="flex flex-col space-y-6 p-6 font-medium text-gray-700">
-          <a href="" className="hover:text-gray-900">
+          <a href="/chatbot" className="hover:text-gray-900">
             Chatbot
-          </Link>
-          <Link to="/kpr" className="text-gray-600 hover:text-black">
           </a>
           <a href="" className="hover:text-gray-900">
             Beli Rumah
           </a>
-          <a href="" className="hover:text-gray-900">
+          <a href="/kpr" className="hover:text-gray-900">
             Hitung KPR
           </a>
           <div className="flex gap-5">
