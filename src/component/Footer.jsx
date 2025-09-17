@@ -5,31 +5,33 @@ import React from "react";
 export default function Footer() {
   return (
     <footer className="bg-amber-100">
-      <Flex justify="between" px="153px" pt="20px">
-        <img src={Logo} width="50" height="40" />
-        <Flex gap="153px">
-          <Flex direction="column">
-            <Text className="font-medium">Tentang Kita</Text>
-            <Link href="" underline="none" color="gray">
+      <div className="md:flex md:justify-between md:text-left text-center lg:space-y-0 md:space-y-0 space-y-2 xl:px-40 lg:px-20 md:px-10 pt-5">
+        <div className="flex justify-center">
+          <img src={Logo} width="50" height="40" />
+        </div>
+        <div className="lg:flex md:flex xl:gap-40 lg:gap-20 md:gap-10 lg:space-y-0 md:space-y-0 space-y-2">
+          <div className="flex flex-col">
+            <h3 className="font-medium text-gray-900">Tentang Kita</h3>
+            <a href="" className="text-gray-600">
               Tentang Kita
-            </Link>
-          </Flex>
-          <Flex direction="column">
-            <Text className="font-medium">Produk</Text>
-            <Link href="" underline="none" color="gray">
+            </a>
+          </div>
+          <div className="flex flex-col">
+            <h3 className="font-medium text-gray-900">Produk</h3>
+            <a href="" className="text-gray-600">
               Beli Rumah
-            </Link>
-          </Flex>
-          <Flex direction="column">
-            <Text className="font-medium">Lainnya</Text>
-            <Link href="" underline="none" color="gray">
+            </a>
+          </div>
+          <div className="flex flex-col">
+            <h3 className="font-medium text-gray-900">Lainnya</h3>
+            <a href="" className="text-gray-600">
               Syarat dan Ketentuan
-            </Link>
-          </Flex>
-        </Flex>
-        <Flex direction="column">
-          <Text className="font-medium">Ikuti Kita</Text>
-          <Flex gap="3">
+            </a>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <h3 className="font-medium text-gray-900">Ikuti Kita</h3>
+          <div className="flex gap-4 justify-center">
             <div className="border-2 border-r-black rounded-full p-1.5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -114,9 +116,9 @@ export default function Footer() {
                 />
               </svg>
             </div>
-          </Flex>
-        </Flex>
-      </Flex>
+          </div>
+        </div>
+      </div>
       <div className="py-7">
         <div className="bg-black h-[1px] w-auto" />
       </div>
