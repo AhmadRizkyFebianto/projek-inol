@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
 import "keen-slider/keen-slider.min.css";
 import KeenSlider from "keen-slider";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,7 +13,7 @@ import { Button } from "@radix-ui/themes";
 import Frame from "../assets/frame.png";
 import ArrowLeft from "../assets/arrow-left.png";
 import ArrowRight from "../assets/arrow-right.png";
-import Location from "../assets/locat.png";
+import  Location from "../assets/locat.png";
 
 const FrameData = [
   { id: 1, url: Frame, alt: "Frame 1" },
@@ -63,24 +64,57 @@ export default function Home() {
   const sliderFiturRef = useRef(null);
   const [slidesPerView, setSlidesPerView] = useState(3); // Menampilkan 3 slide per tampilan
   const swiperContainerRef = useRef(null);
+  const [location, setLocation] = useState({ lat: null, lng: null });
+  const [region, setRegion] = useState(null);
 
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
   const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
-        const response = await fetch(endPoint);
-        const result = await response.json();
-        setrumahTerdekat(result);
+        const response = await axios.get(endPoint);
+        setrumahTerdekat(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
+
+    // Fungsi untuk mendapatkan lokasi pengguna
+    if(!navigator.geolocation) {
+      console.log("Geolocation is not supported by this browser.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async(position) => {
+      setLocation({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
+      try{
+        const response = await axios.get( "https://api.bigdatacloud.net/data/reverse-geocode-client",
+          {
+            params: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              localityLanguage: "id"
+            }
+          }
+        );
+        const data = response.data;
+        const city = data.localityInfo.administrative[3].name 
+        setRegion(city);
+      }
+      catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    });
+    // end fungsi pencarian pengguna
+
   }, []);
+
 
   useEffect(() => {
     const updateSlidesPerView = () => {
@@ -167,7 +201,8 @@ export default function Home() {
               <span>
                 <img src={Location} width="25px" height="25px" />
               </span>
-              {rumahTerdekat.city}
+              {/* {rumahTerdekat.city} */}
+              {region}
             </h3>
           </div>
           <div>
