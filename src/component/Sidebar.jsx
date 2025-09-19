@@ -8,7 +8,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Sidebar untuk desktop */}
-      <aside className="hidden md:flex flex-col items-center justify-center w-1/4 gap-20 p-6 bg-amber-100 h-screen">
+      <aside className="hidden md:flex flex-col items-center justify-center sticky top-0 w-1/4 gap-20 p-6 bg-amber-100 h-screen">
         <button className="w-4/5 py-6 text-xl font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700">
           Hitung KPR
         </button>
