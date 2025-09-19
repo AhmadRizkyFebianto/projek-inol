@@ -13,7 +13,7 @@ import { Button } from "@radix-ui/themes";
 import Frame from "../assets/frame.png";
 import ArrowLeft from "../assets/arrow-left.png";
 import ArrowRight from "../assets/arrow-right.png";
-import  Location from "../assets/locat.png";
+import Location from "../assets/locat.png";
 
 const FrameData = [
   { id: 1, url: Frame, alt: "Frame 1" },
@@ -65,14 +65,13 @@ export default function Home() {
   const [slidesPerView, setSlidesPerView] = useState(3); // Menampilkan 3 slide per tampilan
   const swiperContainerRef = useRef(null);
   const [location, setLocation] = useState({ lat: null, lng: null });
-  const [region, setRegion] = useState(null);
+  const [province, setProvince] = useState(null);
 
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
   const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
 
   useEffect(() => {
-
     const fetchData = async () => {
       try {
         const response = await axios.get(endPoint);
@@ -84,37 +83,39 @@ export default function Home() {
     fetchData();
 
     // Fungsi untuk mendapatkan lokasi pengguna
-    if(!navigator.geolocation) {
+    if (!navigator.geolocation) {
       console.log("Geolocation is not supported by this browser.");
       return;
     }
-    navigator.geolocation.getCurrentPosition(async(position) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
       setLocation({
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       });
-      try{
-        const response = await axios.get( "https://api.bigdatacloud.net/data/reverse-geocode-client",
+      try {
+        const response = await axios.get(
+          "https://api.bigdatacloud.net/data/reverse-geocode-client",
           {
             params: {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
-              localityLanguage: "id"
-            }
+              localityLanguage: "id",
+            },
           }
         );
         const data = response.data;
-        const city = data.localityInfo.administrative[3].name 
-        setRegion(city);
-      }
-      catch (error) {
+        const city = data.localityInfo.administrative[2].name;
+        setProvince(city);
+      } catch (error) {
         console.error("Error fetching data:", error);
       }
     });
     // end fungsi pencarian pengguna
-
   }, []);
 
+  const filteredRumahTerdekat = rumahTerdekat.filter(
+    (item) => item.city === province
+  );
 
   useEffect(() => {
     const updateSlidesPerView = () => {
@@ -202,7 +203,7 @@ export default function Home() {
                 <img src={Location} width="25px" height="25px" />
               </span>
               {/* {rumahTerdekat.city} */}
-              {region}
+              {province}
             </h3>
           </div>
           <div>
@@ -215,61 +216,67 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center mt-20">
-          <Swiper
-            effect="coverflow"
-            grabCursor={true}
-            centeredSlides={true}
-            loop={true}
-            slidesPerView={slidesPerView}
-            coverflowEffect={{
-              rotate: 0, // Putar slide untuk efek 3D
-              stretch: 0, // Mengatur jarak antar slide
-              depth: 100, // Mengatur kedalaman 3D
-              modifier: 2.5, // Meningkatkan atau mengurangi efek coverflow
-              slideShadows: false,
-            }}
-            modules={[EffectCoverflow, Navigation]}
-            className="swiper_container"
-            ref={swiperContainerRef}
-          >
-            {rumahTerdekat.map((item, index) => (
-              <SwiperSlide key={index}>
-                <div className="xl:w-[468px] lg:w-[400px] md:w-[400px] h-auto rounded-xl overflow-hidden shadow-lg">
-                  <img
-                    src={
-                      item.image
-                        ? `${endpointImage}${item.image}`
-                        : "/path/to/default-image.png"
-                    }
-                    alt={item.cluster_apart_name}
-                    className="w-full bg-gray-300 h-[200px] object-cover"
-                  />
-                  <div className="flex bg-gray-100 items-center justify-between p-2.5 gap-2.5">
-                    <div>
-                      <h3 className="xl:text-xl lg:text-xl md:text-xl text-md font-semibold text-gray-800">
-                        {item.cluster_apart_name}
-                      </h3>
-                      <p className="text-gray-700 xl:text-base lg:text-base md:text-base text-sm">
-                        {item.city}
-                      </p>
-                      <p className="xl:text-sm lg:text-sm md:text-sm text-xs text-gray-400 mt-2">
-                        LB {item.square_building} | LT {item.square_land} | L{" "}
-                        {item.property_floor}
-                      </p>
-                    </div>
-                    <div>
-                      <h3 className="text-gray-800 rounded-lg font-semibold xl:text-lg lg:text-lg md:text-lg text-base bg-yellow-400 xl:px-8 lg:px-8 md:px-8 px-2 py-1.5">
-                        {`Rp${item.price_land_per_meter}`}
-                      </h3>
-                      <h3 className="text-gray-700 xl:text-sm lg:text-sm md:text-sm text-xs text-end">
-                        Transaksi
-                      </h3>
+          {filteredRumahTerdekat.length === 0 ? (
+            <p className="text-gray-600 md:text-2xl text-lg text-center">
+              Tidak ada rumah ditemukan di wilayah Anda.
+            </p>
+          ) : (
+            <Swiper
+              effect="coverflow"
+              grabCursor={true}
+              centeredSlides={true}
+              loop={true}
+              slidesPerView={slidesPerView}
+              coverflowEffect={{
+                rotate: 0, // Putar slide untuk efek 3D
+                stretch: 0, // Mengatur jarak antar slide
+                depth: 100, // Mengatur kedalaman 3D
+                modifier: 2.5, // Meningkatkan atau mengurangi efek coverflow
+                slideShadows: false,
+              }}
+              modules={[EffectCoverflow, Navigation]}
+              className="swiper_container"
+              ref={swiperContainerRef}
+            >
+              {filteredRumahTerdekat.map((item, index) => (
+                <SwiperSlide key={index}>
+                  <div className="xl:w-[468px] lg:w-[400px] md:w-[400px] h-auto rounded-xl overflow-hidden shadow-lg">
+                    <img
+                      src={
+                        item.image
+                          ? `${endpointImage}${item.image}`
+                          : "/path/to/default-image.png"
+                      }
+                      alt={item.cluster_apart_name}
+                      className="w-full bg-gray-300 h-[200px] object-cover"
+                    />
+                    <div className="flex bg-gray-100 items-center justify-between p-2.5 gap-2.5">
+                      <div>
+                        <h3 className="xl:text-xl lg:text-xl md:text-xl text-md font-semibold text-gray-800">
+                          {item.cluster_apart_name}
+                        </h3>
+                        <p className="text-gray-700 xl:text-base lg:text-base md:text-base text-sm">
+                          {item.city}
+                        </p>
+                        <p className="xl:text-sm lg:text-sm md:text-sm text-xs text-gray-400 mt-2">
+                          LB {item.square_building} | LT {item.square_land} | L{" "}
+                          {item.property_floor}
+                        </p>
+                      </div>
+                      <div>
+                        <h3 className="text-gray-800 rounded-lg font-semibold xl:text-lg lg:text-lg md:text-lg text-base bg-yellow-400 xl:px-8 lg:px-8 md:px-8 px-2 py-1.5">
+                          {`Rp${item.price_land_per_meter}`}
+                        </h3>
+                        <h3 className="text-gray-700 xl:text-sm lg:text-sm md:text-sm text-xs text-end">
+                          Transaksi
+                        </h3>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </div>
       </div>
 
