@@ -8,7 +8,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Sidebar untuk desktop */}
-      <aside className="hidden md:flex flex-col items-center justify-center w-1/4 gap-20 p-6 bg-yellow-50 h-screen">
+      <aside className="hidden md:flex flex-col items-center justify-center sticky top-0 w-1/4 gap-20 p-6 bg-amber-100 h-screen">
         <button className="w-4/5 py-6 text-xl font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700">
           Hitung KPR
         </button>
@@ -18,7 +18,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Header sidebar (Mobile only) */}
-      <div className="md:hidden flex items-center gap-2 p-4 bg-yellow-50">
+      <div className="md:hidden flex items-center gap-2 p-4 bg-amber-100">
         <h2 className="text-xl font-bold text-green-700">Menu</h2>
         <img
           src={MenuIcon}
@@ -40,7 +40,7 @@ export default function Sidebar() {
 
       {/* Sidebar overlay untuk mobile */}
       <div
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-yellow-50 shadow-lg transform transition-transform duration-300 ease-in-out md:hidden flex flex-col items-center justify-center gap-20 p-6 ${
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-amber-100 shadow-lg transform transition-transform duration-300 ease-in-out md:hidden flex flex-col items-center justify-center gap-20 p-6 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
