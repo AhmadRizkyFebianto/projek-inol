@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import Sidebar from "../component/Sidebar";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
@@ -9,12 +10,12 @@ export default function KprPage() {
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
   const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
 
-  // Fetch data API
+  // Fetch data API pakai axios
   useEffect(() => {
-    fetch(endPoint)
-      .then((res) => res.json())
-      .then((data) => {
-        setDataRumah(data);
+    axios
+      .get(endPoint)
+      .then((res) => {
+        setDataRumah(res.data);
       })
       .catch((err) => console.error("Gagal fetch data:", err));
   }, []);
@@ -70,9 +71,11 @@ export default function KprPage() {
                     <div className="text-right">
                       <span className="block text-base font-semibold text-gray-800 bg-yellow-400 px-3 rounded-lg">
                         Rp{" "}
-                        {new Intl.NumberFormat("id-ID").format(
-                          item.property_price || 0
-                        )}
+                        {item.property_price
+                          ? new Intl.NumberFormat("id-ID").format(
+                              item.property_price
+                            )
+                          : "Harga tidak tersedia"}
                       </span>
                       <p className="text-xs text-gray-600 mt-1">Transaksi</p>
                     </div>
