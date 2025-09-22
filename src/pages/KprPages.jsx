@@ -6,88 +6,165 @@ import Footer from "../component/Footer";
 
 export default function KprPage() {
   const [dataRumah, setDataRumah] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const itemsPerPage = 9;
+
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
   const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
 
-  // Fetch data API pakai axios
   useEffect(() => {
+    setLoading(true);
     axios
       .get(endPoint)
       .then((res) => {
-        setDataRumah(res.data);
+        if (Array.isArray(res.data)) {
+          setDataRumah(res.data);
+        } else if (res.data.data) {
+          setDataRumah(res.data.data);
+        } else {
+          setDataRumah([]);
+        }
       })
-      .catch((err) => console.error("Gagal fetch data:", err));
+      .catch((err) => console.error("Gagal fetch data:", err))
+      .finally(() => setLoading(false));
   }, []);
+
+  const totalPages = Math.ceil(dataRumah.length / itemsPerPage);
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentData = dataRumah.slice(indexOfFirst, indexOfLast);
+
+  // Skeleton shimmer card
+  const SkeletonCard = () => (
+    <div className="w-full overflow-hidden bg-white rounded-lg shadow-lg">
+      {/* Image skeleton */}
+      <div className="h-[200px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
+
+      {/* Content skeleton */}
+      <div className="p-3 space-y-2">
+        <div className="h-4 rounded w-3/4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
+        <div className="h-3 rounded w-1/2 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
+        <div className="h-3 rounded w-2/3 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
+        <div className="flex justify-end">
+          <div className="h-5 rounded w-20 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navbar di atas */}
       <Navbar />
 
       <div className="flex flex-1">
-        {/* Sidebar */}
         <Sidebar />
 
-        {/* Konten utama */}
         <main className="flex-1 p-6 bg-white">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {dataRumah.map((item, i) => (
-              <div
-                key={i}
-                className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
-              >
-                <div className="rounded-xl overflow-hidden">
-                  {/* Image */}
-                  <div className="w-full h-[200px] bg-gray-300 flex items-center justify-center">
-                    {item.image && item.image !== "no-image-found.png" ? (
-                      <img
-                        src={endpointImage + item.image}
-                        alt={item.cluster_apart_name}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <span className="text-gray-400">Image</span>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex items-center justify-between bg-gray-100 p-3">
-                    {/* Info kiri */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {item.cluster_apart_name || "Perumahan"}
-                      </h3>
-                      <p className="text-sm text-gray-700">
-                        {item.city || "Kota Tidak Diketahui"}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        LT {item.square_land}m² | LB {item.square_building}m² |
-                        L {item.property_floor}
-                      </p>
+          {/* Loading shimmer */}
+          {loading ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: itemsPerPage }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : currentData.length === 0 ? (
+            <div className="text-center text-gray-500">Tidak ada data</div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {currentData.map((item, i) => (
+                <div
+                  key={i}
+                  className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
+                >
+                  <div className="rounded-xl overflow-hidden">
+                    {/* Image */}
+                    <div className="w-full h-[200px] bg-gray-300 flex items-center justify-center">
+                      {item.image && item.image !== "no-image-found.png" ? (
+                        <img
+                          src={endpointImage + item.image}
+                          alt={item.cluster_apart_name}
+                          className="object-cover w-full h-full"
+                          loading="lazy" // lazy load image
+                        />
+                      ) : (
+                        <span className="text-gray-400">No Image</span>
+                      )}
                     </div>
 
-                    {/* Info kanan */}
-                    <div className="text-right">
-                      <span className="block text-base font-semibold text-gray-800 bg-yellow-400 px-3 rounded-lg">
-                        Rp{" "}
-                        {item.property_price
-                          ? new Intl.NumberFormat("id-ID").format(
-                              item.property_price
-                            )
-                          : "Harga tidak tersedia"}
-                      </span>
-                      <p className="text-xs text-gray-600 mt-1">Transaksi</p>
+                    {/* Content */}
+                    <div className="flex items-center justify-between bg-gray-100 p-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {item.cluster_apart_name || "Perumahan"}
+                        </h3>
+                        <p className="text-sm text-gray-700">
+                          {item.city || "Kota Tidak Diketahui"}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          LT {item.square_land}m² | LB {item.square_building}m²
+                          | L {item.property_floor}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="block text-base font-semibold text-gray-800 bg-yellow-400 px-3 rounded-lg">
+                          Rp{" "}
+                          {item.property_price
+                            ? new Intl.NumberFormat("id-ID").format(
+                                item.property_price
+                              )
+                            : "N/A"}
+                        </span>
+                        <p className="text-xs text-gray-600 mt-1">Transaksi</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 border rounded ${
+                    currentPage === i + 1
+                      ? "bg-green-600 text-white"
+                      : "bg-white text-gray-800 hover:bg-gray-100"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </main>
       </div>
 
-      {/* Footer di bawah */}
       <Footer />
     </div>
   );
