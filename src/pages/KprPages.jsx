@@ -39,10 +39,7 @@ export default function KprPage() {
   // Skeleton shimmer card
   const SkeletonCard = () => (
     <div className="w-full overflow-hidden bg-white rounded-lg shadow-lg">
-      {/* Image skeleton */}
       <div className="h-[200px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
-
-      {/* Content skeleton */}
       <div className="p-3 space-y-2">
         <div className="h-4 rounded w-3/4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
         <div className="h-3 rounded w-1/2 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] animate-shimmer"></div>
@@ -86,7 +83,7 @@ export default function KprPage() {
                           src={endpointImage + item.image}
                           alt={item.cluster_apart_name}
                           className="object-cover w-full h-full"
-                          loading="lazy" // lazy load image
+                          loading="lazy"
                         />
                       ) : (
                         <span className="text-gray-400">No Image</span>
@@ -129,6 +126,7 @@ export default function KprPage() {
           {/* Pagination */}
           {!loading && totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
+              {/* Prev button */}
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
@@ -137,20 +135,44 @@ export default function KprPage() {
                 Prev
               </button>
 
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 border rounded ${
-                    currentPage === i + 1
-                      ? "bg-green-600 text-white"
-                      : "bg-white text-gray-800 hover:bg-gray-100"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
+              {/* Page numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((page) => {
+                  if (totalPages <= 10) return true;
+                  if (currentPage <= 6)
+                    return page <= 10 || page === totalPages;
+                  if (currentPage >= totalPages - 5)
+                    return page > totalPages - 10 || page === 1;
+                  return (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 4 && page <= currentPage + 4)
+                  );
+                })
+                .map((page, idx, arr) => {
+                  const prevPage = arr[idx - 1];
+                  const showEllipsis = prevPage && page - prevPage > 1;
 
+                  return (
+                    <span key={page} className="flex items-center">
+                      {showEllipsis && (
+                        <span className="px-2 py-1 text-gray-500">...</span>
+                      )}
+                      <button
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1 border rounded ${
+                          currentPage === page
+                            ? "bg-green-600 text-white"
+                            : "bg-white text-gray-800 hover:bg-gray-100"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    </span>
+                  );
+                })}
+
+              {/* Next button */}
               <button
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
