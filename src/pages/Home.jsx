@@ -64,58 +64,55 @@ export default function Home() {
   const sliderFiturRef = useRef(null);
   const [slidesPerView, setSlidesPerView] = useState(3); // Menampilkan 3 slide per tampilan
   const swiperContainerRef = useRef(null);
-  const [location, setLocation] = useState({ lat: null, lng: null });
   const [province, setProvince] = useState(null);
-
+  const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
   const endPoint =
-    "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
+    "https://smataco.my.id/dev/unez/CariRumahAja/api/rumahterdekat.php";
   const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(endPoint);
-        setrumahTerdekat(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-
-    // Fungsi untuk mendapatkan lokasi pengguna
+  const GetData = async (lat, lng) => {
+    try {
+      const response = await axios.get(endPoint,{
+        params: {
+          latitude: lat,
+          longitude: lng,
+          page: 1,
+        },
+      });
+      setrumahTerdekat(response.data);      
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const Geodata = async () => {
     if (!navigator.geolocation) {
       console.log("Geolocation is not supported by this browser.");
       return;
     }
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      setLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
+      navigator.geolocation.getCurrentPosition(async (position) => {
       try {
         const response = await axios.get(
-          "https://api.bigdatacloud.net/data/reverse-geocode-client",
+          "https://maps.googleapis.com/maps/api/geocode/json",
           {
             params: {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              localityLanguage: "id",
-            },
-          }
-        );
+              latlng: `${position.coords.latitude},${position.coords.longitude}`,
+              key: KeyMaps,
+            },});
         const data = response.data;
-        const city = data.localityInfo.administrative[2].name;
+        const city = data.results[0].address_components.find(
+          (component) => component.types[0].includes("administrative_area_level_2")
+        ).long_name;
         setProvince(city);
-      } catch (error) {
+        GetData(position.coords.latitude, position.coords.longitude);
+        } catch (error) {
         console.error("Error fetching data:", error);
       }
     });
-    // end fungsi pencarian pengguna
-  }, []);
+  };
 
-  const filteredRumahTerdekat = rumahTerdekat.filter(
-    (item) => item.city === province
-  );
+  useEffect(() => {
+    Geodata()
+  }, []);
 
   useEffect(() => {
     const updateSlidesPerView = () => {
@@ -216,7 +213,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center mt-20">
-          {filteredRumahTerdekat.length === 0 ? (
+          {rumahTerdekat.length === 0 ? (
             <p className="text-gray-600 md:text-2xl text-lg text-center">
               Tidak ada rumah ditemukan di wilayah Anda.
             </p>
@@ -238,7 +235,7 @@ export default function Home() {
               className="swiper_container"
               ref={swiperContainerRef}
             >
-              {filteredRumahTerdekat.map((item, index) => (
+              {rumahTerdekat.map((item, index) => (
                 <SwiperSlide key={index}>
                   <div className="xl:w-[468px] lg:w-[400px] md:w-[400px] h-auto rounded-xl overflow-hidden shadow-lg">
                     <img
