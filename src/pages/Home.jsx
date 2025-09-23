@@ -68,18 +68,19 @@ export default function Home() {
   const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/rumahterdekat.php";
-  const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
+  const endpointImage =
+    "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
   const GetData = async (lat, lng) => {
     try {
-      const response = await axios.get(endPoint,{
+      const response = await axios.get(endPoint, {
         params: {
           latitude: lat,
           longitude: lng,
           page: 1,
         },
       });
-      setrumahTerdekat(response.data);      
+      setrumahTerdekat(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -89,7 +90,7 @@ export default function Home() {
       console.log("Geolocation is not supported by this browser.");
       return;
     }
-      navigator.geolocation.getCurrentPosition(async (position) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
       try {
         const response = await axios.get(
           "https://maps.googleapis.com/maps/api/geocode/json",
@@ -97,21 +98,23 @@ export default function Home() {
             params: {
               latlng: `${position.coords.latitude},${position.coords.longitude}`,
               key: KeyMaps,
-            },});
+            },
+          }
+        );
         const data = response.data;
-        const city = data.results[0].address_components.find(
-          (component) => component.types[0].includes("administrative_area_level_2")
+        const city = data.results[0].address_components.find((component) =>
+          component.types[0].includes("administrative_area_level_2")
         ).long_name;
         setProvince(city);
         GetData(position.coords.latitude, position.coords.longitude);
-        } catch (error) {
+      } catch (error) {
         console.error("Error fetching data:", error);
       }
     });
   };
 
   useEffect(() => {
-    Geodata()
+    Geodata();
   }, []);
 
   useEffect(() => {
@@ -237,15 +240,16 @@ export default function Home() {
             >
               {rumahTerdekat.map((item, index) => (
                 <SwiperSlide key={index}>
-                  <div className="xl:w-[468px] lg:w-[400px] md:w-[400px] h-auto rounded-xl overflow-hidden shadow-lg">
+                  <div className="xl:w-[468px] lg:w-[400px] md:w-[400px] h-auto rounded-xl overflow-hidden shadow-lg relative">
+                    <h3 className="text-xs font-extrabold top-3 right-3 absolute bg-[#E5E7EB] px-2 py-1 rounded-full border-2 border-[#D4AF37]">
+                      {item.ref_id}
+                    </h3>
                     <img
-                      src={
-                        item.image
-                          ? `${endpointImage}${item.image}`
-                          : "/path/to/default-image.png"
-                      }
+                      // src={endpointImage + item.image}
+                      src={endpointImage}
                       alt={item.cluster_apart_name}
-                      className="w-full bg-gray-300 h-[200px] object-cover"
+                      className="object-cover w-full h-full"
+                      loading="lazy"
                     />
                     <div className="flex bg-gray-100 items-center justify-between p-2.5 gap-2.5">
                       <div>
@@ -261,8 +265,13 @@ export default function Home() {
                         </p>
                       </div>
                       <div>
-                        <h3 className="text-gray-800 rounded-lg font-semibold xl:text-lg lg:text-lg md:text-lg text-base bg-yellow-400 xl:px-8 lg:px-8 md:px-8 px-2 py-1.5">
-                          {`Rp${item.price_land_per_meter}`}
+                        <h3 className="text-gray-800 rounded-lg font-semibold text-base bg-yellow-400 px-2 py-1.5">
+                          Rp.
+                          {item.property_price
+                            ? new Intl.NumberFormat("id-ID").format(
+                                item.property_price
+                              )
+                            : "N/A"}
                         </h3>
                         <h3 className="text-gray-700 xl:text-sm lg:text-sm md:text-sm text-xs text-end">
                           Transaksi

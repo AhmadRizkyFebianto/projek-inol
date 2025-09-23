@@ -12,7 +12,8 @@ export default function KprPage() {
 
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
-  const endpointImage = "https://smataco.my.id/api_digicon/assets/images/";
+  const endpointImage =
+    "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
   useEffect(() => {
     setLoading(true);
@@ -69,25 +70,28 @@ export default function KprPage() {
           ) : currentData.length === 0 ? (
             <div className="text-center text-gray-500">Tidak ada data</div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 overflow-y-auto"
+              style={{ maxHeight: "calc(100vh - 200px)" }}
+            >
               {currentData.map((item, i) => (
                 <div
                   key={i}
                   className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
                 >
-                  <div className="rounded-xl overflow-hidden">
+                  <div className="rounded-xl overflow-hidden relative">
                     {/* Image */}
                     <div className="w-full h-[200px] bg-gray-300 flex items-center justify-center">
-                      {item.image && item.image !== "no-image-found.png" ? (
-                        <img
-                          src={endpointImage + item.image}
-                          alt={item.cluster_apart_name}
-                          className="object-cover w-full h-full"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span className="text-gray-400">No Image</span>
-                      )}
+                      <h3 className="text-xs font-extrabold top-3 right-3 absolute bg-[#E5E7EB] px-2 py-1 rounded-full border-2 border-[#D4AF37]">
+                        {item.ref_id}
+                      </h3>
+                      <img
+                        // src={endpointImage + item.image}
+                        src={endpointImage}
+                        alt={item.cluster_apart_name}
+                        className="object-cover w-full h-full"
+                        loading="lazy"
+                      />
                     </div>
 
                     {/* Content */}
