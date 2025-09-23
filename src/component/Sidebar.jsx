@@ -11,7 +11,11 @@ export default function Sidebar() {
     <>
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col sticky top-0 w-1/4 p-6 bg-amber-100 min-h-screen overflow-y-auto pb-20">
-        <div className="flex flex-col items-center justify-center h-full w-full gap-y-8">
+        <div className="flex flex-col items-center h-full w-full gap-y-8">
+          <p className="text-xl font-bold justify-center text-justify-center">
+            Tentukan solusi biaya rumah yang sesuai dengan kemampuan dan
+            finansial kamu!
+          </p>
           {/* Bagian atas (Hitung KPR) */}
           <div className="flex flex-col items-center w-full">
             <button
