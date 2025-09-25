@@ -3,10 +3,22 @@ import { Link, useLocation } from "react-router-dom"; // ✅ pakai useLocation
 import Logo from "../assets/logo.png";
 import Menu from "../assets/menu.png";
 import Close from "../assets/close.png";
+import HalamanLogin from "../Pages/HalamanLogin";
+import HalamanRegister from "../Pages/HalamanRegister";
 
 export default function Navbar() {
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [showDaftarPopup, setShowDaftarPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation(); // ✅ ambil path sekarang
+
+  const toggleLoginPopup = () => {
+    setShowLoginPopup(!showLoginPopup);
+  };
+
+  const toggleDaftarPopup = () => {
+    setShowDaftarPopup(!showDaftarPopup);
+  };
 
   // helper function buat ngecek active
   const isActive = (path) =>
@@ -57,7 +69,8 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                to="/login"
+                to=""
+                onClick={toggleLoginPopup}
                 className={`hover:text-gray-500 ${isActive("/login")}`}
               >
                 Masuk
@@ -66,7 +79,8 @@ export default function Navbar() {
             <div className="bg-black w-0.5 h-7" />
             <li>
               <Link
-                to="/register"
+                to=""
+                onClick={toggleDaftarPopup}
                 className={`hover:text-gray-500 ${isActive("/register")}`}
               >
                 Daftar
@@ -113,14 +127,16 @@ export default function Navbar() {
           </Link>
           <div className="flex gap-5">
             <Link
-              to="/login"
+              to=""
+              onClick={toggleLoginPopup}
               className={`hover:text-gray-900 ${isActive("/login")}`}
             >
               Masuk
             </Link>
             <div className="bg-black w-0.5 h-7" />
             <Link
-              to="/register"
+              to=""
+              onClick={toggleDaftarPopup}
               className={`hover:text-gray-900 ${isActive("/register")}`}
             >
               Daftar
@@ -128,6 +144,26 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Login Pop Up */}
+      {showLoginPopup && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div
+            onClick={toggleLoginPopup}
+            className="absolute inset-0 bg-black opacity-30"
+          />
+          <HalamanLogin />
+        </div>
+      )}
+      {showDaftarPopup && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div
+            onClick={toggleDaftarPopup}
+            className="absolute inset-0 bg-black opacity-30"
+          />
+          <HalamanRegister />
+        </div>
+      )}
     </>
   );
 }
