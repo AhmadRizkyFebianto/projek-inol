@@ -216,7 +216,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center mt-20">
-          {rumahTerdekat.length === 0 ? (
+          {rumahTerdekat.error ? (
             <p className="text-gray-600 md:text-2xl text-lg text-center">
               Tidak ada rumah ditemukan di wilayah Anda.
             </p>
