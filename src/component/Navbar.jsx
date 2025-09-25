@@ -150,7 +150,7 @@ export default function Navbar() {
         <div className="fixed inset-0 flex justify-center items-center z-50">
           <div
             onClick={toggleLoginPopup}
-            className="absolute inset-0 bg-black opacity-30"
+            className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
           <HalamanLogin />
         </div>
@@ -159,7 +159,7 @@ export default function Navbar() {
         <div className="fixed inset-0 flex justify-center items-center z-50">
           <div
             onClick={toggleDaftarPopup}
-            className="absolute inset-0 bg-black opacity-30"
+            className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
           <HalamanRegister />
         </div>

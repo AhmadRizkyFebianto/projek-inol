@@ -6,15 +6,22 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../Firebase/config";
 import { ThreeCircles } from "react-loader-spinner";
 import API from "../../Config/Endpoint";
+import HalamanLKS from "../../pages/HalamanLKS";
 
 const Login = () => {
-  const endPoint = API.endpointlogin
+  const endPoint = API.endpointlogin;
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [kataSandi, setKataSandi] = useState("");
+
+  const [showLupaPopup, setShowLupaPopup] = useState(false);
+
+  const toggleLupaPopup = () => {
+    setShowLupaPopup(!showLupaPopup);
+  };
 
   const handleEmailChange = (newValue) => {
     setEmail(newValue);
@@ -76,6 +83,8 @@ const Login = () => {
         </div>
       )}
 
+      {showLupaPopup && <HalamanLKS togglePopup={toggleLupaPopup} />}
+
       <form
         className="w-full flex flex-col items-center gap-6 mt-15"
         method="POST"
@@ -113,7 +122,7 @@ const Login = () => {
         <button
           type="button"
           className="text-xs text-black mt-6 hover:underline"
-          onClick={() => navigate("/lupakatasandi")}
+          onClick={() => navigate("/LupaKataSandi")}
         >
           Lupa Kata Sandi?
         </button>

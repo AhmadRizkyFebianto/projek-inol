@@ -14,7 +14,7 @@ import ChatBot from "./pages/ChatBot.jsx";
 import Profile from "./pages/Profile.jsx";
 import HalamanLogin from "./Pages/HalamanLogin";
 import HalamanRegister from "./Pages/HalamanRegister";
-import HalamanLKS from "./Pages/HalamanLKS";
+import HalamanLKS from "./pages/HalamanLKS";
 import HalamanKSB from "./Pages/HalamanKSB";
 import HalamanVerif from "./Pages/HalamanVerifikasiKode";
 import Halamansk from "./Pages/Halamansk";
@@ -27,6 +27,7 @@ createRoot(document.getElementById("root")).render(
           <GlobalLoader />
           <Routes>
             <Route path="/" element={<App />} />
+            <Route path="/LupaKataSandi" element={<HalamanLKS />} />
             <Route path="/kpr" element={<KprPage />} />
             <Route path="/chatbot" element={<ChatBot />} />
             <Route path="/profile" element={<Profile />} />
