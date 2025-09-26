@@ -8,7 +8,7 @@ import { ThreeCircles } from "react-loader-spinner";
 import API from "../../Config/Endpoint";
 
 const Login = () => {
-  const endPoint = API.endpointlogin
+  // const endPoint = `${API.endpointlogin}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(kataSandi)}`;
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -38,28 +38,36 @@ const Login = () => {
     }
   }
 
-  const checkLogin = (event) => {
+  const checkLogin = async (event) => {
     event.preventDefault();
-    fetch(endPoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        kata_sandi: kataSandi,
-      }),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success === true) {
-          alert(`Hello, ${response.data.nama_lengkap}`);
-        } else {
-          alert("Password atau Email Salah");
-          setEmail("");
-          setKataSandi("");
-        }
-      });
+
+    if (!email || !kataSandi) {
+      alert("Isi email dan password dulu");
+      return;
+    }
+
+    const url = new URL(API.endpointlogin);
+    url.searchParams.set("email", email);
+    url.searchParams.set("password", kataSandi);
+
+    console.log("Request URL:", url.toString());
+
+    try {
+      const res = await fetch(url.toString(), { method: "GET" });
+      const response = await res.json();
+      console.log("Response:", response);
+
+      if (response.status === "success") {
+        alert(`Hello, ${response.user.nama_lengkap}`);
+      } else {
+        alert(response.message || "Password atau Email Salah");
+        setEmail("");
+        setKataSandi("");
+      }
+    } catch (err) {
+      console.error("Error login:", err);
+      alert("Terjadi kesalahan koneksi");
+    }
   };
 
   return (
