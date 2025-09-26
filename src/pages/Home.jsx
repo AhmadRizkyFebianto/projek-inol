@@ -144,10 +144,49 @@ export default function Home() {
       slidesPerView: 1,
       spacing: 10,
       centered: true,
+      duration: 1000,
+      autoplay: true, // This enables auto-sliding
     });
+
+    // Custom auto-slide with delay and pause on hover
+    let timeout;
+    let mouseOver = false;
+
+    function clearNextTimeout() {
+      clearTimeout(timeout);
+    }
+
+    function nextTimeout() {
+      clearTimeout(timeout);
+      if (mouseOver) return;
+      timeout = setTimeout(() => {
+        newSlider.next();
+      }, 2000); // 2 seconds delay for auto-sliding
+    }
+
+    newSlider.on("created", () => {
+      newSlider.container.addEventListener("mouseover", () => {
+        mouseOver = true;
+        clearNextTimeout();
+      });
+
+      newSlider.container.addEventListener("mouseout", () => {
+        mouseOver = false;
+        nextTimeout();
+      });
+
+      nextTimeout(); // Start auto-sliding after 2 seconds
+    });
+
+    newSlider.on("dragStarted", clearNextTimeout);
+    newSlider.on("animationEnded", nextTimeout);
+    newSlider.on("updated", nextTimeout);
+
     setSlider(newSlider);
 
-    return () => newSlider.destroy();
+    return () => {
+      newSlider.destroy();
+    };
   }, []);
 
   useEffect(() => {
@@ -174,7 +213,7 @@ export default function Home() {
               <img
                 src={frame.url}
                 alt={frame.alt}
-                className="w-full h-[500px]"
+                className="w-full h-[500px] object-cover"
               />
             </div>
           ))}
