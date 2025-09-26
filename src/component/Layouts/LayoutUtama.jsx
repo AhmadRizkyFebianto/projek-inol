@@ -51,9 +51,9 @@ const KSBLayout = (props) => {
 };
 
 const LKSLayout = (props) => {
-  const { title, children } = props;
+  const { title, children, onBack } = props;
   return (
-    <LoginLayout height="458px">
+    <LoginLayout height="458px" onBack={onBack}>
       {title}
       {children}
     </LoginLayout>
@@ -61,11 +61,10 @@ const LKSLayout = (props) => {
 };
 
 const RegisterLayout = (props) => {
-  const { title, children } = props;
-  const navigate = useNavigate();
+  const { title, children,onBack } = props;
 
   return (
-    <LoginLayout onBack={() => navigate("/login")}>
+    <LoginLayout onBack={onBack}>
       {title}
       {children}
     </LoginLayout>
