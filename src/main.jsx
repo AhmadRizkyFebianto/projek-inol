@@ -12,8 +12,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import KprPage from "./pages/KprPages.jsx";
 import ChatBot from "./pages/ChatBot.jsx";
 import Profile from "./pages/Profile.jsx";
-import HalamanLogin from "./Pages/HalamanLogin";
-import HalamanRegister from "./Pages/HalamanRegister";
 import HalamanLKS from "./pages/HalamanLKS";
 import HalamanKSB from "./Pages/HalamanKSB";
 import HalamanVerif from "./Pages/HalamanVerifikasiKode";
@@ -31,6 +29,7 @@ createRoot(document.getElementById("root")).render(
             <Route path="/kpr" element={<KprPage />} />
             <Route path="/chatbot" element={<ChatBot />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/syaratdanketentuan" element={<Halamansk />} />
           </Routes>
         </BrowserRouter>
       </LoadingProvider>

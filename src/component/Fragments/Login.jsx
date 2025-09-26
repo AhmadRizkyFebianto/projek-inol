@@ -6,22 +6,15 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../Firebase/config";
 import { ThreeCircles } from "react-loader-spinner";
 import API from "../../Config/Endpoint";
-import HalamanLKS from "../../pages/HalamanLKS";
 
 const Login = () => {
-  const endPoint = API.endpointlogin;
+  // const endPoint = `${API.endpointlogin}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(kataSandi)}`;
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [kataSandi, setKataSandi] = useState("");
-
-  const [showLupaPopup, setShowLupaPopup] = useState(false);
-
-  const toggleLupaPopup = () => {
-    setShowLupaPopup(!showLupaPopup);
-  };
 
   const handleEmailChange = (newValue) => {
     setEmail(newValue);
@@ -45,28 +38,36 @@ const Login = () => {
     }
   }
 
-  const checkLogin = (event) => {
+  const checkLogin = async (event) => {
     event.preventDefault();
-    fetch(endPoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        kata_sandi: kataSandi,
-      }),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        if (response.success === true) {
-          alert(`Hello, ${response.data.nama_lengkap}`);
-        } else {
-          alert("Password atau Email Salah");
-          setEmail("");
-          setKataSandi("");
-        }
-      });
+
+    if (!email || !kataSandi) {
+      alert("Isi email dan password dulu");
+      return;
+    }
+
+    const url = new URL(API.endpointlogin);
+    url.searchParams.set("email", email);
+    url.searchParams.set("password", kataSandi);
+
+    console.log("Request URL:", url.toString());
+
+    try {
+      const res = await fetch(url.toString(), { method: "GET" });
+      const response = await res.json();
+      console.log("Response:", response);
+
+      if (response.status === "success") {
+        alert(`Hello, ${response.user.nama_lengkap}`);
+      } else {
+        alert(response.message || "Password atau Email Salah");
+        setEmail("");
+        setKataSandi("");
+      }
+    } catch (err) {
+      console.error("Error login:", err);
+      alert("Terjadi kesalahan koneksi");
+    }
   };
 
   return (
@@ -82,8 +83,6 @@ const Login = () => {
           />
         </div>
       )}
-
-      {showLupaPopup && <HalamanLKS togglePopup={toggleLupaPopup} />}
 
       <form
         className="w-full flex flex-col items-center gap-6 mt-15"
@@ -122,7 +121,7 @@ const Login = () => {
         <button
           type="button"
           className="text-xs text-black mt-6 hover:underline"
-          onClick={() => navigate("/LupaKataSandi")}
+          onClick={() => navigate("/lupakatasandi")}
         >
           Lupa Kata Sandi?
         </button>

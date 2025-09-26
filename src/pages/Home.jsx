@@ -10,15 +10,17 @@ import "swiper/css/pagination";
 import { EffectCoverflow, Navigation } from "swiper/modules";
 import Search from "../component/Search";
 import { Button } from "@radix-ui/themes";
-import Frame from "../assets/frame.png";
+import Frame1 from "../assets/frame1.png";
+import Frame2 from "../assets/frame2.png";
+import Frame3 from "../assets/frame3.png";
 import ArrowLeft from "../assets/arrow-left.png";
 import ArrowRight from "../assets/arrow-right.png";
 import Location from "../assets/locat.png";
 
 const FrameData = [
-  { id: 1, url: Frame, alt: "Frame 1" },
-  { id: 2, url: Frame, alt: "Frame 1" },
-  { id: 3, url: Frame, alt: "Frame 1" },
+  { id: 1, url: Frame1, duration: 5, alt: "Frame 1" },
+  { id: 2, url: Frame2, duration: 5, alt: "Frame 2," },
+  { id: 3, url: Frame3, duration: 5, alt: "Frame 3," },
 ];
 
 const cardData = [
