@@ -61,7 +61,7 @@ const LKSLayout = (props) => {
 };
 
 const RegisterLayout = (props) => {
-  const { title, children,onBack } = props;
+  const { title, children, onBack } = props;
 
   return (
     <LoginLayout onBack={onBack}>
@@ -71,15 +71,16 @@ const RegisterLayout = (props) => {
   );
 };
 
-const SKLayout = () => {
+const SKLayout = (props) => {
   const navigate = useNavigate();
+  const { onBack } = props;
 
   return (
     <div className="w-screen min-h-screen bg-white">
       <header className="sticky top-0 flex items-center w-full px-5 py-4 bg-[#549AF8] text-black shadow-md">
         <button
           className="w-8 h-8 rounded-md hover:bg-[#2067C5] transition flex items-center justify-center mr-4 "
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

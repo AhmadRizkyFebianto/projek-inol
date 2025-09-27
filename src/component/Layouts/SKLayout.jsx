@@ -1,16 +1,18 @@
-import React from 'react'
-import SK from '../Fragments/SK';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import SK from "../Fragments/SK";
+import { useNavigate } from "react-router-dom";
 
-
-const SKLayout = () => {
-
-  const navigate = useNavigate()
+const SKLayout = (props) => {
+  const { onBack } = props;
+  const navigate = useNavigate();
 
   return (
     <div className="w-screen min-h-screen bg-white">
       <header className="sticky top-0 flex items-center w-full px-5 py-4 bg-[#549AF8] text-black shadow-md">
-        <button className="w-8 h-8 rounded-md hover:bg-[#2067C5] transition flex items-center justify-center mr-4 " onClick={() => navigate("/register")}>
+        <button
+          className="w-8 h-8 rounded-md hover:bg-[#2067C5] transition flex items-center justify-center mr-4 "
+          onClick={() => navigate("/")}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
