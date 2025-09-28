@@ -11,11 +11,9 @@ import Home from "./pages/Home";
 function App() {
   return (
     <>
-      <Navbar />
       <div>
         <Home />
       </div>
-      <Footer />
     </>
   );
 }
