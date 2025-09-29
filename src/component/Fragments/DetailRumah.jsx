@@ -3,33 +3,58 @@ import { useNavigate } from "react-router-dom";
 import API from "../../Config/Endpoint";
 
 const DetailRumah = () => {
-  // const {searchParams} = useSearchParams();
-  // const ref_idvalue = searchParams.get('ref_id');
-  // const {ref_id} = useParams();
   const [favorit, setFavorit] = useState(false);
+  const [detail, setDetail] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const [detail, setDetail] = useState([]);
-  let paramRefId = "";
+  const endpointImage =
+    "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
-  // const GetParams = () => {
-
-  // }
   useEffect(() => {
     const path = window.location.pathname;
     const segments = path.split("/");
-    paramRefId = segments[2];
+    const paramRefId = segments[2];
+
+    setLoading(true);
     fetch(API.endpointDetail + "&ref_id=" + paramRefId)
       .then((res) => res.json())
       .then((response) => {
         setDetail(response);
-      });
+      })
+      .catch((err) => console.error("Error fetch:", err))
+      .finally(() => setLoading(false));
   }, []);
+
+  console.log(detail);
+
+  // Skeleton shimmer untuk teks detail
+  const SkeletonDetail = () => (
+    <div className="mt-[19px] mb-[96px] animate-pulse space-y-5">
+      <div className="flex items-center justify-between">
+        <div className="h-8 w-24 bg-gray-300 rounded"></div>
+        <div className="h-8 w-16 bg-gray-300 rounded"></div>
+      </div>
+      <div className="h-6 w-1/3 bg-gray-300 rounded"></div>
+      <div className="h-4 w-1/4 bg-gray-300 rounded"></div>
+      <div className="h-10 w-1/2 bg-gray-300 rounded"></div>
+      <div className="h-4 w-2/3 bg-gray-300 rounded"></div>
+      <div className="h-24 w-full bg-gray-300 rounded"></div>
+    </div>
+  );
+
+  // Skeleton shimmer untuk gambar
+  const SkeletonImage = () => (
+    <div className="w-full h-[606px] overflow-hidden bg-gray-300 rounded-lg shadow-md mt-[19px] mb-[96px] animate-pulse"></div>
+  );
+
   return (
-    <>
-      <div className="grid grid-cols-2 gap-[33px] pr-[80px] pl-[80px]">
-        {detail.map((item) => (
-          <div className="mt-[19px] mb-[96px]">
+    <div className="grid grid-cols-2 gap-[33px] pr-[80px] pl-[80px]">
+      {loading ? (
+        <SkeletonDetail />
+      ) : (
+        detail.map((item, i) => (
+          <div key={i} className="mt-[19px] mb-[96px]">
             <div className="flex items-center justify-between w-full font-jakarta text-xs">
               <button
                 className="px-3 p-3 h-8 rounded-md bg-[#F4D77B] hover:bg-[#E7C555] transition flex items-center justify-center mr-4 "
@@ -135,10 +160,12 @@ const DetailRumah = () => {
                 <span className="text-xs text-gray-600">Favorit</span>
               </button>
             </div>
+
             <div className="mt-[21px]">
               <h1 className="font-semibold text-2xl">Lokasi</h1>
               <p>{item.address}</p>
             </div>
+
             <div className="mt-[21px]">
               <h1 className="font-semibold text-2xl">Kepemilikan</h1>
               <p>
@@ -149,6 +176,7 @@ const DetailRumah = () => {
                 SHM
               </p>
             </div>
+
             <div className="mt-[21px]">
               <h1 className="font-semibold text-2xl">Detail</h1>
               <p>
@@ -166,6 +194,7 @@ const DetailRumah = () => {
                 Bebas Banjir
               </p>
             </div>
+
             <div className="flex items-center justify-between w-full mt-[21px]">
               <div className="font-jakarta text-sm">
                 <p>
@@ -191,15 +220,19 @@ const DetailRumah = () => {
               </div>
             </div>
           </div>
-        ))}
+        ))
+      )}
 
+      {loading ? (
+        <SkeletonImage />
+      ) : (
         <div className="w-full h-[606px] overflow-hidden bg-gray-200 rounded-lg shadow-md mt-[19px] mb-[96px]">
           <div className="flex items-center justify-center bg-gray-200 h-full">
-            <img src="/src/assets/profile.jpg" alt="fotorumah" />
+            <img src={endpointImage} alt="fotorumah" className="object-cover" />
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import SK from "../Fragments/SK";
 import Logo from "../../assets/logo.png";
 import DetailRumah from "../Fragments/DetailRumah";
@@ -118,6 +118,11 @@ const VerifLayout = (props) => {
 };
 
 const DetailLayout = () => {
+  const location = useLocation;
+  const isActive = (path) =>
+    location.pathname === path
+      ? "text-gray-700 font-semibold"
+      : "text-gray-700";
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

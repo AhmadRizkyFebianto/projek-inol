@@ -5,6 +5,7 @@ import axios from "axios"; // Ditambahkan: Impor axios yang hilang
 import Search from "../component/Search";
 import Footer from "../component/Footer";
 import Navbar from "../component/Navbar";
+import { Link, useNavigate } from "react-router-dom";
 
 // --- Konstanta ---
 const API_ENDPOINT =
@@ -34,8 +35,12 @@ const SkeletonCard = () => (
 /**
  * Komponen untuk menampilkan satu kartu properti.
  */
-const PropertyCard = ({ item }) => (
-  <div className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30">
+
+const PropertyCard = ({ item, onClick }) => (
+  <div
+    className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
+    onClick={onClick}
+  >
     <div className="rounded-xl overflow-hidden relative">
       <div className="w-full h-[200px] bg-gray-300 flex items-center justify-center">
         <h3 className="text-xs font-extrabold top-3 right-3 absolute bg-[#E5E7EB] px-2 py-1 rounded-full border-2 border-[#D4AF37]">
@@ -84,6 +89,10 @@ export default function Beli() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(12); // Jumlah kartu sudah 12
+  const navigate = useNavigate();
+  const handledetail = (ref_id) => {
+    navigate("/detailrumah/" + ref_id);
+  };
 
   // Fetch data dari API saat komponen pertama kali dimuat
   useEffect(() => {
@@ -176,7 +185,11 @@ export default function Beli() {
               style={{ maxHeight: "calc(105vh - 200px)" }}
             >
               {currentData.map((item) => (
-                <PropertyCard key={item.ref_id} item={item} />
+                <PropertyCard
+                  key={item.ref_id}
+                  item={item}
+                  onClick={() => handledetail(item.ref_id)}
+                />
               ))}
             </div>
 

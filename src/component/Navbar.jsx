@@ -65,10 +65,15 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                to="/beli"
-                className={`hover:text-gray-500 ${isActive("/beli")}`}
+                to="/belirumah"
+                className={`hover:text-gray-500 ${isActive("/belirumah")}`}
               >
                 Beli Rumah
+              </Link>
+            </li>
+            <li>
+              <Link to="" className={`hover:text-gray-500 ${isActive("")}`}>
+                Jual Rumah
               </Link>
             </li>
             <li>
@@ -129,10 +134,13 @@ export default function Navbar() {
             Chatbot
           </Link>
           <Link
-            to="/beli"
-            className={`hover:text-gray-900 ${isActive("/beli")}`}
+            to="/belirumah"
+            className={`hover:text-gray-900 ${isActive("/belirumah")}`}
           >
             Beli Rumah
+          </Link>
+          <Link to="" className={`hover:text-gray-900 ${isActive("")}`}>
+            Jual Rumah
           </Link>
           <Link to="/kpr" className={`hover:text-gray-900 ${isActive("/kpr")}`}>
             Hitung KPR

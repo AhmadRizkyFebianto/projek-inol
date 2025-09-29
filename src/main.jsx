@@ -12,9 +12,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import KprPage from "./pages/KprPages.jsx";
 import ChatBot from "./pages/ChatBot.jsx";
 import Profile from "./pages/Profile.jsx";
+import Beli from "./pages/Beli.jsx";
 import {
   HalamanLKS,
   Halamansk,
+  HalamanDetail,
   HalamanKSB,
   HalamanVerif,
 } from "./pages/HalamanUtama";
@@ -28,10 +30,12 @@ createRoot(document.getElementById("root")).render(
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/LupaKataSandi" element={<HalamanLKS />} />
+            <Route path="/syaratdanketentuan" element={<Halamansk />} />
             <Route path="/kpr" element={<KprPage />} />
             <Route path="/chatbot" element={<ChatBot />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/syaratdanketentuan" element={<Halamansk />} />
+            <Route path="/belirumah" element={<Beli />} />
+            <Route path="/detailrumah/:refid" element={<HalamanDetail />} />
           </Routes>
         </BrowserRouter>
       </LoadingProvider>
