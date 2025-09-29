@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../component/Sidebar";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
@@ -8,7 +9,12 @@ export default function KprPage() {
   const [dataRumah, setDataRumah] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const itemsPerPage = 9;
+
+  const handledetail = (ref_id) => {
+    navigate("/detailrumah/" + ref_id);
+  };
 
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
@@ -78,6 +84,7 @@ export default function KprPage() {
                 <div
                   key={i}
                   className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
+                  onClick={() => handledetail(item.ref_id)}
                 >
                   <div className="rounded-xl overflow-hidden relative">
                     {/* Image */}
