@@ -58,7 +58,7 @@ const DetailRumah = () => {
             <div className="flex items-center justify-between w-full font-jakarta text-xs">
               <button
                 className="px-3 p-3 h-8 rounded-md bg-[#F4D77B] hover:bg-[#E7C555] transition flex items-center justify-center mr-4 "
-                onClick={() => navigate("/")}
+                onClick={() => navigate(-1)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
