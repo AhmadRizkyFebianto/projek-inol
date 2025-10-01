@@ -8,12 +8,14 @@ import {
   HalamanLogin,
   HalamanRegister,
   HalamanLKS,
+  HalamanVerif,
 } from "../../Pages/HalamanUtama";
 
 export default function Navbar() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showDaftarPopup, setShowDaftarPopup] = useState(false);
   const [showLKSPopup, setShowLKSPopup] = useState(false);
+  const [showVerifPopup, setShowVerifPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null); // ✅ state user
   const [isOpen, setIsOpen] = useState(false);
@@ -44,9 +46,14 @@ export default function Navbar() {
   const toggleLoginPopup = () => setShowLoginPopup(!showLoginPopup);
   const toggleDaftarPopup = () => setShowDaftarPopup(!showDaftarPopup);
   const toggleLKSPopup = () => setShowLKSPopup(!showLKSPopup);
+  const toggleVerifPopup = () => setShowVerifPopup(!showVerifPopup);
   const routelks = () => {
     toggleLoginPopup();
     toggleLKSPopup();
+  };
+  const routeverif = () => {
+    toggleLKSPopup();
+    toggleVerifPopup();
   };
 
   const isActive = (path) =>
@@ -290,7 +297,16 @@ export default function Navbar() {
             onClick={toggleLKSPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanLKS close={toggleLKSPopup} />
+          <HalamanLKS close={toggleLKSPopup} routeverif={routeverif} />
+        </div>
+      )}
+      {showVerifPopup && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div
+            onClick={toggleVerifPopup}
+            className="absolute inset-0 bg-black/35 backdrop-blur-md"
+          />
+          <HalamanVerif close={toggleVerifPopup} />
         </div>
       )}
     </>
