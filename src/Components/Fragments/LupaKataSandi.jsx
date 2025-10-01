@@ -42,7 +42,10 @@ const LKS = ({ route }) => {
           className="font-jakarta text-xs text-black text-center"
         />
 
-        <Button className="text-center mx-auto mt-25" onClick={route}>
+        <Button
+          className="text-center mx-auto mt-25"
+          onClick={() => navigate("/verifikasikode")}
+        >
           Lanjut
         </Button>
       </div>

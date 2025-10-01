@@ -24,13 +24,13 @@ const HalamanKSB = () => {
   );
 };
 
-const HalamanLKS = ({ close }) => {
+const HalamanLKS = ({ close, routeVerif }) => {
   return (
     <div className="relative min-h-screen flex items-center justify-center ">
       <div className="absolute inset-0  blur-sm"></div>
       <div className="relative z-10">
         <LKSLayout title="Lupa Kata Sandi" onBack={close}>
-          <LupaKataSandi />
+          <LupaKataSandi route={routeVerif} />
         </LKSLayout>
       </div>
     </div>
@@ -79,8 +79,8 @@ const Halamansk = () => {
 };
 
 const HalamanVerif = () => {
-// const location = useLocation();
-//   const { otp, phone } = location.state || {};
+  // const location = useLocation();
+  //   const { otp, phone } = location.state || {};
   return (
     <div className="relative min-h-screen flex items-center justify-center ">
       <div className="absolute inset-0  blur-sm"></div>
