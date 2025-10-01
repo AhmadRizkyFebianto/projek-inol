@@ -14,6 +14,13 @@ export default function Profile() {
     phone: "088888888888",
   });
 
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_fullname");
+    localStorage.removeItem("auth_email");
+    window.location.href = "/";
+  };
+
   useEffect(() => {
     setProfile({
       nama: localStorage.getItem("auth_fullname") || "Yang Jungwon",
@@ -104,7 +111,10 @@ export default function Profile() {
             <button className="w-28 bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow">
               Ubah Data
             </button>
-            <button className="w-28 bg-red-500 px-3 py-2 rounded-lg hover:bg-red-600 transition-all shadow">
+            <button
+              className="w-28 bg-red-500 px-3 py-2 rounded-lg hover:bg-red-600 transition-all shadow"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           </div>
