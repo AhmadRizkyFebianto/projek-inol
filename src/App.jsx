@@ -1,20 +1,84 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import KprPage from "./Pages/KprPages.jsx";
+import ChatBot from "./Pages/Chatbot.jsx";
+import Profile from "./Pages/Profile.jsx";
+import { LoadingProvider } from "./Context/Loader";
+import GlobalLoader from "./Context/GlobalLoader";
+import {
+  HalamanKSB,
+  HalamanLKS,
+  HalamanLogin,
+  HalamanRegister,
+  HalamanVerif,
+  Halamansk,
+  HalamanDetail,
+} from "./Pages/HalamanUtama";
+import Home from "./Pages/Home.jsx";
+import Beli from "./Pages/Beli.jsx";
+import ProtectedRoute from "./Components/Fragments/protectedRoute.jsx";
 import "./App.css";
-import { Button, Flex } from "@radix-ui/themes";
-import Navbar from "./component/Navbar";
-import Footer from "./component/Footer";
-import Search from "./component/Search";
-import Home from "./pages/Home";
 
 function App() {
   return (
-    <>
-      <div>
-        <Home />
-      </div>
-    </>
+    <LoadingProvider>
+      <BrowserRouter>
+        <GlobalLoader />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/kpr"
+            element={
+              <ProtectedRoute>
+                <KprPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chatbot"
+            element={
+              <ProtectedRoute>
+                <ChatBot />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <protectedRoute>
+                <Profile />
+              </protectedRoute>
+            }
+          />
+          <Route path="/login" element={<HalamanLogin />} />
+          <Route path="/register" element={<HalamanRegister />} />
+          {/* <Route path="/lupakatasandi" element={<HalamanLKS />} /> */}
+          <Route path="/katasandibaru" element={<HalamanKSB />} />
+          <Route
+            path="/verifikasikode/:code/:name/:email"
+            element={<HalamanVerif />}
+          />
+          <Route path="/syaratdanketentuan" element={<Halamansk />} />
+          <Route
+            path="/beli"
+            element={
+              <ProtectedRoute>
+                {" "}
+                <Beli />{" "}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/detailrumah/:refid"
+            element={
+              <ProtectedRoute>
+                {" "}
+                <HalamanDetail />{" "}
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </LoadingProvider>
   );
 }
 

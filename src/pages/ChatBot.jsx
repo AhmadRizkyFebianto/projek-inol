@@ -1,5 +1,5 @@
 import { Menu, Send, X, Edit } from "lucide-react";
-import Navbar from "../component/Navbar";
+import Navbar from "../Components/Elements/Navbar";
 import { useState } from "react";
 
 export default function ChatBot() {

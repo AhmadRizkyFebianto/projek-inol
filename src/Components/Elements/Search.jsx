@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 
 export default function Search() {
-  // Data Provinsi
+  
   const provinces = ["Jakarta", "Jawa Timur", "Jawa Barat", "Yogyakarta"];
   const [selectedProvince, setSelectedProvince] = useState("Provinsi");
 
-  // Data Max Price
   const maxPrice = ["100000", "200000", "300000", "400000", "500000"];
   const [selectedMaxPrice, setSelectedMaxPrice] = useState("Harga Maximal");
 
-  // Data Min Price
   const minPrice = ["100000", "200000", "300000", "400000", "500000"];
   const [selectedMinPrice, setSelectedMinPrice] = useState("Harga Minimal");
 
@@ -54,7 +52,7 @@ export default function Search() {
                 Filter Pencarian
               </h2>
 
-              {/* Harga Minimal */}
+           =
               <div className="relative w-full">
                 <button
                   onClick={() => setIsOpenMinPrice(!isOpenMinPrice)}
@@ -97,7 +95,7 @@ export default function Search() {
                 )}
               </div>
 
-              {/* Harga Maximal */}
+            
               <div className="relative w-full">
                 <button
                   onClick={() => setIsOpenMaxPrice(!isOpenMaxPrice)}
@@ -140,7 +138,6 @@ export default function Search() {
                 )}
               </div>
 
-              {/* Provinsi */}
               <div className="relative w-full">
                 <button
                   onClick={() => setIsOpenProvince(!isOpenProvince)}

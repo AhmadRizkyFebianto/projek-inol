@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import MenuIcon from "../assets/menu.png";
-import CloseIcon from "../assets/close.png";
+import MenuIcon from "../../assets/menu.png";
+import CloseIcon from "../../assets/close.png";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false); // sidebar mobile
@@ -9,19 +9,19 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Sidebar Desktop */}
+      {/* // Sidebar Desktop // */}
       <aside className="hidden md:flex flex-col sticky top-0 w-1/4 p-6 bg-amber-100 min-h-screen overflow-y-auto pb-20">
-        <p className="text-xl font-bold justify-center text-justify-center mb-5">
+        <p className="text-xl font-bold justify-center text-justify-center">
           Tentukan solusi biaya rumah yang sesuai dengan kemampuan dan finansial
           kamu!
         </p>
-        <div className="flex flex-col items-center h-full w-full gap-y-8">
-          {/* Bagian atas (Hitung KPR) */}
+        <div className="flex flex-col items-center justify-center h-full w-full gap-y-5">
+          {/* /* Bagian atas (Hitung KPR) */}
           <div className="flex flex-col items-center w-full">
             <button
               onClick={() => {
                 setShowFormHitung(!showFormHitung);
-                setShowFormSimulasi(false); // tutup Simulasi kalau Hitung dibuka
+                setShowFormSimulasi(false);
               }}
               className="w-4/5 py-6 text-xl font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700"
             >
@@ -61,7 +61,7 @@ export default function Sidebar() {
                         type="number"
                         className="flex-1 px-3 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700 text-sm">Tahun</span>
+                      <span className=" text-gray-700 text-sm">Tahun</span>
                     </div>
                   </div>
                   <div>
@@ -89,7 +89,7 @@ export default function Sidebar() {
             <button
               onClick={() => {
                 setShowFormSimulasi(!showFormSimulasi);
-                setShowFormHitung(false); // tutup Hitung kalau Simulasi dibuka
+                setShowFormHitung(false);
               }}
               className="w-4/5 py-6 text-xl font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700"
             >
@@ -156,7 +156,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Header Sidebar (Mobile) */}
-      <div className="md:hidden sticky top-0 flex flex-col items-start p-4 bg-amber-100 z-40 shadow">
+      <div className="md:hidden sticky top-0 flex flex-col items-center p-4 bg-amber-100 z-40 shadow">
         <h2 className="text-xl font-bold text-green-700">Menu</h2>
         <img
           src={MenuIcon}
@@ -178,7 +178,7 @@ export default function Sidebar() {
 
       {/* Sidebar Mobile */}
       <div
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-amber-100 shadow-lg transform transition-transform duration-300 ease-in-out md:hidden flex flex-col p-6 overflow-y-auto pb-10 ${
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-amber-100 shadow-lg transform transition-transform duration-300 ease-in-out md:hidden flex flex-col items-center justify-center p-6 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -194,16 +194,17 @@ export default function Sidebar() {
         </div>
 
         <div className="flex flex-col items-center w-full gap-y-8 mt-12">
-          <p className="text-lg font-bold justify-center text-justify-center">
-            Tentukan solusi biaya rumah yang sesuai dengan kemampuan dan
+          <p>
+            Tentukan Solusi biaya rumah yang sesuai dengan kemampuan dan
             finansial kamu!
           </p>
+
           {/* Tombol Hitung KPR Mobile */}
           <div className="flex flex-col items-center w-full">
             <button
               onClick={() => {
                 setShowFormHitung(!showFormHitung);
-                setShowFormSimulasi(false); // tutup Simulasi kalau Hitung dibuka
+                setShowFormSimulasi(false);
               }}
               className="w-4/5 py-6 text-xl font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700"
             >
@@ -273,7 +274,7 @@ export default function Sidebar() {
             <button
               onClick={() => {
                 setShowFormSimulasi(!showFormSimulasi);
-                setShowFormHitung(false); // tutup Hitung kalau Simulasi dibuka
+                setShowFormHitung(false);
               }}
               className="w-4/5 py-6 text-xl font-semibold text-white bg-green-600 rounded-xl hover:bg-green-700"
             >

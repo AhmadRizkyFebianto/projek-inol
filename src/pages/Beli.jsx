@@ -2,16 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios"; // Ditambahkan: Impor axios yang hilang
 
 // Import komponen UI
-import Search from "../component/Search";
-import Footer from "../component/Footer";
-import Navbar from "../component/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import Search from "../Components/Elements/Search";
+import Footer from "../Components/Elements/Footer";
+import Navbar from "../Components/Elements/Navbar";
 
 // --- Konstanta ---
-const API_ENDPOINT =
-  "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?mode=latest";
-const IMAGE_BASE_URL =
-  "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
+const API_ENDPOINT = "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?mode=latest";
+const IMAGE_BASE_URL = "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
 // --- Komponen Pendukung ---
 
@@ -35,12 +32,8 @@ const SkeletonCard = () => (
 /**
  * Komponen untuk menampilkan satu kartu properti.
  */
-
-const PropertyCard = ({ item, onClick }) => (
-  <div
-    className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
-    onClick={onClick}
-  >
+const PropertyCard = ({ item }) => (
+  <div className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30">
     <div className="rounded-xl overflow-hidden relative">
       <div className="w-full h-[200px] bg-gray-300 flex items-center justify-center">
         <h3 className="text-xs font-extrabold top-3 right-3 absolute bg-[#E5E7EB] px-2 py-1 rounded-full border-2 border-[#D4AF37]">
@@ -89,10 +82,6 @@ export default function Beli() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(12); // Jumlah kartu sudah 12
-  const navigate = useNavigate();
-  const handledetail = (ref_id) => {
-    navigate("/detailrumah/" + ref_id);
-  };
 
   // Fetch data dari API saat komponen pertama kali dimuat
   useEffect(() => {
@@ -128,8 +117,7 @@ export default function Beli() {
       .filter((page) => {
         if (totalPages <= 10) return true;
         if (currentPage <= 6) return page <= 10 || page === totalPages;
-        if (currentPage >= totalPages - 5)
-          return page > totalPages - 10 || page === 1;
+        if (currentPage >= totalPages - 5) return page > totalPages - 10 || page === 1;
         return (
           page === 1 ||
           page === totalPages ||
@@ -142,9 +130,7 @@ export default function Beli() {
 
         return (
           <span key={page} className="flex items-center">
-            {showEllipsis && (
-              <span className="px-2 py-1 text-gray-500">...</span>
-            )}
+            {showEllipsis && <span className="px-2 py-1 text-gray-500">...</span>}
             <button
               onClick={() => setCurrentPage(page)}
               className={`px-3 py-1 border rounded ${
@@ -185,11 +171,7 @@ export default function Beli() {
               style={{ maxHeight: "calc(105vh - 200px)" }}
             >
               {currentData.map((item) => (
-                <PropertyCard
-                  key={item.ref_id}
-                  item={item}
-                  onClick={() => handledetail(item.ref_id)}
-                />
+                <PropertyCard key={item.ref_id} item={item} />
               ))}
             </div>
 
@@ -197,9 +179,7 @@ export default function Beli() {
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
                 <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >

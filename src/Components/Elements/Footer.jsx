@@ -1,9 +1,9 @@
 import { Flex, Text, Link, Box, Heading } from "@radix-ui/themes";
-import Logo from "../assets/logo.png";
+import Logo from "../../assets/logo.png";
 import React from "react";
-import Instagram from "../assets/instagram.png";
-import Facebook from "../assets/facebook.png";
-import X from "../assets/x.png";
+import Instagram from "../../assets/instagram.png";
+import Facebook from "../../assets/facebook.png";
+import X from "../../assets/x.png";
 
 export default function Footer() {
   return (

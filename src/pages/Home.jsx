@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import axios from "axios";
+import axios from "axios"; //pake axios aja ya dik :)
 import "keen-slider/keen-slider.min.css";
 import KeenSlider from "keen-slider";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,18 +8,20 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { EffectCoverflow, Navigation } from "swiper/modules";
-import Search from "../component/Search";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Search from "../Components/Elements/Search";
 import { Button } from "@radix-ui/themes";
-import Frame1 from "../assets/frame1.png";
-import Frame2 from "../assets/frame2.png";
-import Frame3 from "../assets/frame3.png";
+import Frame from "../assets/frame.png";
 import ArrowLeft from "../assets/arrow-left.png";
 import ArrowRight from "../assets/arrow-right.png";
 import Location from "../assets/locat.png";
+import Navbar from "../Components/Elements/Navbar";
+import Footer from "../Components/Elements/Footer";
+import Frame1 from "../assets/frame1.png";
+import Frame2 from "../assets/frame2.png";
+import Frame3 from "../assets/frame3.png";
 import { Pointer } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const FrameData = [
   { id: 1, url: Frame1, duration: 5, alt: "Frame 1" },
@@ -42,8 +44,10 @@ export default function Home() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [city, setCity] = useState(null);
+  const [nama_lengkap, setNama_lengkap] = useState("");
   const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
   const navigate = useNavigate();
+
   let ApiContribution =
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/contribution.php?mode=nearby&latitude=-6.208763&longitude=106.845599";
   //?latitude=-6.3474679&longitude=106.8246569&page=1
@@ -97,6 +101,7 @@ export default function Home() {
     // );
   };
   useEffect(() => {
+    setNama_lengkap(localStorage.getItem("auth_fullname"));
     textLocation();
   }, []);
 
@@ -190,7 +195,7 @@ export default function Home() {
             <div className="w-1 h-1 md:block hidden" />
             <div className="">
               <h3 className="font-semibold xl:text-2xl lg:text-2xl md:text-2xl text-lg">
-                Rumah Terdekat
+                Rumah Terdekat {nama_lengkap}
               </h3>
               <h3 className="flex xl:justify-center lg:justify-center md:justify-center justify-normal gap-1">
                 {city}

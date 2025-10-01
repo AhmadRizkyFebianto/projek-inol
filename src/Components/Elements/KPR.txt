@@ -5,11 +5,7 @@ import Menu from "../assets/menu.png";
 import Close from "../assets/close.png";
 // import HalamanLogin from "../pages/HalamanLogin";
 // import HalamanRegister from "../pages/HalamanRegister";
-import {
-  HalamanLogin,
-  HalamanRegister,
-  HalamanLKS,
-} from "../pages/HalamanUtama";
+import { HalamanLogin,HalamanRegister,HalamanLKS } from "../pages/HalamanUtama";
 
 export default function Navbar() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -29,8 +25,9 @@ export default function Navbar() {
     setShowLKSPopup(!showLKSPopup);
   };
   const routelks = () => {
-    toggleLoginPopup(), toggleLKSPopup();
-  };
+    toggleLoginPopup(),
+    toggleLKSPopup()
+  }
 
   // helper function buat ngecek active
   const isActive = (path) =>
@@ -58,28 +55,23 @@ export default function Navbar() {
             <li>
               <Link
                 to="/chatbot"
-                className={`hover:text-gray-500 ${isActive("/chatbot")}`}
+                className={hover:text-gray-500 ${isActive("/chatbot")}}
               >
                 Chatbot
               </Link>
             </li>
             <li>
               <Link
-                to="/belirumah"
-                className={`hover:text-gray-500 ${isActive("/belirumah")}`}
+                to="/beli"
+                className={hover:text-gray-500 ${isActive("/beli")}}
               >
                 Beli Rumah
               </Link>
             </li>
             <li>
-              <Link to="" className={`hover:text-gray-500 ${isActive("")}`}>
-                Jual Rumah
-              </Link>
-            </li>
-            <li>
               <Link
                 to="/kpr"
-                className={`hover:text-gray-500 ${isActive("/kpr")}`}
+                className={hover:text-gray-500 ${isActive("/kpr")}}
               >
                 Hitung KPR
               </Link>
@@ -88,7 +80,7 @@ export default function Navbar() {
               <Link
                 to=""
                 onClick={toggleLoginPopup}
-                className={`hover:text-gray-500 ${isActive("/login")}`}
+                className={hover:text-gray-500 ${isActive("/login")}}
               >
                 Masuk
               </Link>
@@ -98,7 +90,7 @@ export default function Navbar() {
               <Link
                 to=""
                 onClick={toggleDaftarPopup}
-                className={`hover:text-gray-500 ${isActive("/register")}`}
+                className={hover:text-gray-500 ${isActive("/register")}}
               >
                 Daftar
               </Link>
@@ -129,27 +121,24 @@ export default function Navbar() {
         <div className="flex flex-col space-y-6 p-6 font-medium">
           <Link
             to="/chatbot"
-            className={`hover:text-gray-900 ${isActive("/chatbot")}`}
+            className={hover:text-gray-900 ${isActive("/chatbot")}}
           >
             Chatbot
           </Link>
           <Link
-            to="/belirumah"
-            className={`hover:text-gray-900 ${isActive("/belirumah")}`}
+            to="/beli"
+            className={hover:text-gray-900 ${isActive("/beli")}}
           >
             Beli Rumah
           </Link>
-          <Link to="" className={`hover:text-gray-900 ${isActive("")}`}>
-            Jual Rumah
-          </Link>
-          <Link to="/kpr" className={`hover:text-gray-900 ${isActive("/kpr")}`}>
+          <Link to="/kpr" className={hover:text-gray-900 ${isActive("/kpr")}}>
             Hitung KPR
           </Link>
           <div className="flex gap-5">
             <Link
               to=""
               onClick={toggleLoginPopup}
-              className={`hover:text-gray-900 ${isActive("/login")}`}
+              className={hover:text-gray-900 ${isActive("/login")}}
             >
               Masuk
             </Link>
@@ -157,7 +146,7 @@ export default function Navbar() {
             <Link
               to=""
               onClick={toggleDaftarPopup}
-              className={`hover:text-gray-900 ${isActive("/register")}`}
+              className={hover:text-gray-900 ${isActive("/register")}}
             >
               Daftar
             </Link>
@@ -181,7 +170,7 @@ export default function Navbar() {
             onClick={toggleDaftarPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanRegister close={toggleDaftarPopup} />
+          <HalamanRegister close={toggleDaftarPopup}/>
         </div>
       )}
       {showLKSPopup && (
@@ -190,7 +179,7 @@ export default function Navbar() {
             onClick={toggleLKSPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanLKS close={toggleLKSPopup} />
+          <HalamanLKS close={toggleLKSPopup}/>
         </div>
       )}
     </>

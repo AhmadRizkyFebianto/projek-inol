@@ -1,26 +1,29 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import Sidebar from "../component/Sidebar";
-import Navbar from "../component/Navbar";
-import Footer from "../component/Footer";
+import Sidebar from "../Components/Elements/Sidebar";
+import Navbar from "../Components/Elements/Navbar";
+import Footer from "../Components/Elements/Footer";
+import { useNavigate } from "react-router-dom";
+
+//DINIKIN 9 CARD UDAH BENER TAPI DIBIKIN SCROLL KEATAS CARDNYA JADI UTK BAGIAN SIDEBAR NYA STAY DAN YG CARD NYA YG SCROLL KEATAS CARD 9 TO 6 KALAU DI SCROLL
 
 export default function KprPage() {
   const [dataRumah, setDataRumah] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [itemsPerPage, setItemsPerPage] = useState(9);
+
+
   const navigate = useNavigate();
-  const itemsPerPage = 9;
-
   const handledetail = (ref_id) => {
-    navigate("/detailrumah/" + ref_id);
-  };
-
+    navigate('/detailrumah/' + ref_id)
+  }
   const endPoint =
-    "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php";
+    "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?mode=latest";
   const endpointImage =
     "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
+  // Fetch data API
   useEffect(() => {
     setLoading(true);
     axios
@@ -34,6 +37,11 @@ export default function KprPage() {
           setDataRumah([]);
         }
       })
+      // fetch(endPoint)
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     setDataRumah(data);
+      //   })
       .catch((err) => console.error("Gagal fetch data:", err))
       .finally(() => setLoading(false));
   }, []);
@@ -76,15 +84,14 @@ export default function KprPage() {
           ) : currentData.length === 0 ? (
             <div className="text-center text-gray-500">Tidak ada data</div>
           ) : (
-            <div
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 overflow-y-auto"
-              style={{ maxHeight: "calc(100vh - 200px)" }}
-            >
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 overflow-y-auto"
+              style={{ maxHeight: "calc(105vh - 200px)" }}>
               {currentData.map((item, i) => (
                 <div
                   key={i}
                   className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
-                  onClick={() => handledetail(item.ref_id)}
+                  
+                  onClick={() => handledetail (item.ref_id)}
                 >
                   <div className="rounded-xl overflow-hidden relative">
                     {/* Image */}
@@ -99,13 +106,25 @@ export default function KprPage() {
                         className="object-cover w-full h-full"
                         loading="lazy"
                       />
+                      
+                      {/* <img
+                          // src={endpointImage + item.image}
+                          src={endpointImage}
+                          alt={item.cluster_apart_name}
+                          className="object-cover w-full h-full"
+                          loading="lazy"
+                        />
+                      ) : ( */}
+                      {/* <span className="text-gray-400">No Image</span>
+                      )} */}
                     </div>
 
                     {/* Content */}
+
                     <div className="flex items-center justify-between bg-gray-100 p-3">
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-800">
-                          {item.cluster_apart_name || "Perumahan"}
+                        <h3 className="text-lg font-semibold text-gray-800 ">
+                          {item.cluster_apart_name.slice(0, 15) || "Perumahan"}
                         </h3>
                         <p className="text-sm text-gray-700">
                           {item.city || "Kota Tidak Diketahui"}
@@ -116,12 +135,12 @@ export default function KprPage() {
                         </p>
                       </div>
 
-                      <div className="text-right">
-                        <span className="block text-base font-semibold text-gray-800 bg-yellow-400 px-3 rounded-lg">
+                      <div className="flex flex-col text-right w-fit">
+                        <span className="block text-sm font-semibold text-gray-800 bg-yellow-400 px-3 rounded-lg">
                           Rp{" "}
                           {item.property_price
                             ? new Intl.NumberFormat("id-ID").format(
-                                item.property_price
+                                item.property_price.slice(0, -2)
                               )
                             : "N/A"}
                         </span>
@@ -173,7 +192,7 @@ export default function KprPage() {
                         onClick={() => setCurrentPage(page)}
                         className={`px-3 py-1 border rounded ${
                           currentPage === page
-                            ? "bg-green-600 text-white"
+                            ? "bg-[#549AF8] text-white"
                             : "bg-white text-gray-800 hover:bg-gray-100"
                         }`}
                       >

@@ -2,8 +2,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import SK from "../Fragments/SK";
 import Logo from "../../assets/logo.png";
 import DetailRumah from "../Fragments/DetailRumah";
-import Footer from "../Footer";
-import Navbar from "../Navbar";
+import Footer from "../Elements/Footer";
+import Navbar from "../Elements/Navbar";
 
 const LoginLayout = (props) => {
   const { title, children, height = "640px", onBack } = props;
@@ -72,16 +72,15 @@ const RegisterLayout = (props) => {
   );
 };
 
-const SKLayout = (props) => {
+const SKLayout = () => {
   const navigate = useNavigate();
-  const { onBack } = props;
 
   return (
     <div className="w-screen min-h-screen bg-white">
       <header className="sticky top-0 flex items-center w-full px-5 py-4 bg-[#549AF8] text-black shadow-md">
         <button
           className="w-8 h-8 rounded-md hover:bg-[#2067C5] transition flex items-center justify-center mr-4 "
-          onClick={() => navigate("/")}
+          onClick={() => navigate(-1)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -118,15 +117,9 @@ const VerifLayout = (props) => {
 };
 
 const DetailLayout = () => {
-  const location = useLocation;
-  const isActive = (path) =>
-    location.pathname === path
-      ? "text-gray-700 font-semibold"
-      : "text-gray-700";
   return (
-    <div className="min-h-screen flex flex-col">
+    <div>
       <Navbar />
-
       <main className="flex-1">
         <DetailRumah />
       </main>
