@@ -129,6 +129,16 @@ const DetailLayout = () => {
   );
 };
 
+const UbahProfileLayout = (props) => {
+  const { title, children, onBack } = props;
+  return (
+    <LoginLayout height="458px" onBack={onBack}>
+      {title}
+      {children}
+    </LoginLayout>
+  );
+};
+
 export {
   LoginLayout,
   KSBLayout,
@@ -137,4 +147,5 @@ export {
   SKLayout,
   VerifLayout,
   DetailLayout,
+  UbahProfileLayout,
 };

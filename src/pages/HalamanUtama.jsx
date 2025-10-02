@@ -4,12 +4,14 @@ import Login from "../Components/Fragments/Login";
 import Register from "../Components/Fragments/Register";
 import SK from "../Components/Fragments/SK";
 import OTPInput from "../Components/Fragments/VerifikasiKode";
+import UbahProfile from "../Components/Fragments/UbahProfile";
 import { DetailLayout, SKLayout } from "../Components/Layouts/LayoutUtama";
 import { KSBLayout } from "../Components/Layouts/LayoutUtama";
 import { LoginLayout } from "../Components/Layouts/LayoutUtama";
 import { RegisterLayout } from "../Components/Layouts/LayoutUtama";
 import { LKSLayout } from "../Components/Layouts/LayoutUtama";
 import { VerifLayout } from "../Components/Layouts/LayoutUtama";
+import { UbahProfileLayout } from "../Components/Layouts/LayoutUtama";
 
 const HalamanKSB = () => {
   return (
@@ -97,6 +99,19 @@ const HalamanDetail = () => {
   return <DetailLayout />;
 };
 
+const HalamanUbahProfile = ({ close }) => {
+  return (
+    <div className="relative min-h-screen flex items-center justify-center ">
+      <div className="absolute inset-0  blur-sm"></div>
+      <div className="relative z-10">
+        <UbahProfileLayout title={"Ubah Data"} onBack={close}>
+          <UbahProfile />
+        </UbahProfileLayout>
+      </div>
+    </div>
+  );
+};
+
 export {
   HalamanKSB,
   HalamanLKS,
@@ -105,4 +120,5 @@ export {
   HalamanVerif,
   Halamansk,
   HalamanDetail,
+  HalamanUbahProfile,
 };

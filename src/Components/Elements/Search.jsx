@@ -1,18 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import API from "../../Config/Endpoint";
 
 export default function Search() {
-  
-  const provinces = ["Jakarta", "Jawa Timur", "Jawa Barat", "Yogyakarta"];
+  const [dataProvinsi, setDataProvinsi] = useState([]);
+  const endPoint = API.endpointProvinsi;
+
+  // Menangani pemanggilan API untuk mendapatkan data provinsi
+  useEffect(() => {
+    axios
+      .get(endPoint)
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          setDataProvinsi(res.data); // Jika data berupa array
+        } else if (res.data.data) {
+          setDataProvinsi(res.data.data); // Jika data berada di dalam properti data
+        } else {
+          setDataProvinsi([]); // Jika data tidak sesuai
+        }
+      })
+      .catch((err) => console.error("Gagal fetch data:", err)); // Menangani error
+  }, []);
+
+  console.log(dataProvinsi);
+
   const [selectedProvince, setSelectedProvince] = useState("Provinsi");
 
-  const maxPrice = ["100000", "200000", "300000", "400000", "500000"];
-  const [selectedMaxPrice, setSelectedMaxPrice] = useState("Harga Maximal");
-
-  const minPrice = ["100000", "200000", "300000", "400000", "500000"];
-  const [selectedMinPrice, setSelectedMinPrice] = useState("Harga Minimal");
-
-  const [isOpenMinPrice, setIsOpenMinPrice] = useState(false);
-  const [isOpenMaxPrice, setIsOpenMaxPrice] = useState(false);
   const [isOpenProvince, setIsOpenProvince] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
 
@@ -51,91 +64,20 @@ export default function Search() {
               <h2 className="text-center text-lg font-medium">
                 Filter Pencarian
               </h2>
-
-           =
               <div className="relative w-full">
-                <button
-                  onClick={() => setIsOpenMinPrice(!isOpenMinPrice)}
-                  className="w-full flex justify-between text-black items-center rounded-lg border !border-blue-500 !bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
-                >
-                  {selectedMinPrice}
-                  <svg
-                    className={`w-5 h-5 transition-transform ${
-                      isOpenMinPrice ? "rotate-180" : "rotate-0"
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {isOpenMinPrice && (
-                  <ul className="absolute z-10 text-black mt-2 w-full rounded-lg border !border-blue-500 !bg-white shadow-lg">
-                    {minPrice.map((item, idx) => (
-                      <li
-                        key={idx}
-                        onClick={() => {
-                          setSelectedMinPrice(item);
-                          setIsOpenMinPrice(false);
-                        }}
-                        className="cursor-pointer px-4 py-2 hover:bg-blue-100"
-                      >
-                        {item}
-                        <div className="border-b border-gray-200 mt-2 last:border-0"></div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <input
+                  type="text"
+                  placeholder="Harga Minimal"
+                  className="w-full rounded-lg border border-blue-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800 bg-white shadow-lg"
+                />
               </div>
 
-            
               <div className="relative w-full">
-                <button
-                  onClick={() => setIsOpenMaxPrice(!isOpenMaxPrice)}
-                  className="w-full flex justify-between items-center text-black rounded-lg border !border-blue-500 !bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
-                >
-                  {selectedMaxPrice}
-                  <svg
-                    className={`w-5 h-5 transition-transform ${
-                      isOpenMaxPrice ? "rotate-180" : "rotate-0"
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {isOpenMaxPrice && (
-                  <ul className="absolute z-10 mt-2 w-full text-black rounded-lg border !border-blue-500 !bg-white shadow-lg">
-                    {maxPrice.map((item, idx) => (
-                      <li
-                        key={idx}
-                        onClick={() => {
-                          setSelectedMaxPrice(item);
-                          setIsOpenMaxPrice(false);
-                        }}
-                        className="cursor-pointer px-4 py-2 hover:bg-blue-100"
-                      >
-                        {item}
-                        <div className="border-b border-gray-200 mt-2 last:border-0"></div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <input
+                  type="text"
+                  placeholder="Harga Maksimal"
+                  className="w-full rounded-lg border border-blue-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800 bg-white shadow-lg"
+                />
               </div>
 
               <div className="relative w-full">
@@ -162,20 +104,32 @@ export default function Search() {
                 </button>
 
                 {isOpenProvince && (
-                  <ul className="absolute z-10 mt-2 w-full text-black rounded-lg border !border-blue-500 !bg-white shadow-lg">
-                    {provinces.map((province, idx) => (
-                      <li
-                        key={idx}
-                        onClick={() => {
-                          setSelectedProvince(province);
-                          setIsOpenProvince(false);
-                        }}
-                        className="cursor-pointer px-4 py-2 hover:bg-blue-100"
-                      >
-                        {province}
-                        <div className="border-b border-gray-200 mt-2 last:border-0"></div>
-                      </li>
-                    ))}
+                  <ul
+                    className="absolute z-10 mt-2 w-full text-black rounded-lg border !border-blue-500 !bg-white shadow-lg"
+                    style={{
+                      maxHeight: "200px", // Mengatur batas ketinggian dropdown
+                      overflowY: "auto", // Menambahkan scroll vertikal
+                    }}
+                  >
+                    {/* Tampilkan provinsi yang didapatkan dari API */}
+                    {dataProvinsi.length > 0 ? (
+                      dataProvinsi.map((province, idx) => (
+                        <li
+                          key={idx}
+                          onClick={() => {
+                            setSelectedProvince(province.nama); // Misalkan 'nama' adalah properti nama provinsi
+                            setIsOpenProvince(false);
+                          }}
+                          className="cursor-pointer px-4 py-2 hover:bg-blue-100 text-black"
+                        >
+                          {province.nama}{" "}
+                          {/* Misalkan 'nama' adalah properti nama provinsi */}
+                          <div className="border-b border-gray-200 mt-2 last:border-0"></div>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="px-4 py-2">Data tidak ditemukan</li>
+                    )}
                   </ul>
                 )}
               </div>

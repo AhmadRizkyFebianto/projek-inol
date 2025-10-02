@@ -5,6 +5,7 @@ import ProfileImage from "../assets/profile.jpg";
 import Jual from "../assets/sale-01.png";
 import Edit from "../assets/edit.png";
 import { Bookmark } from "lucide-react";
+import { HalamanUbahProfile } from "../Pages/HalamanUtama";
 
 export default function Profile() {
   const [profile, setProfile] = useState({
@@ -13,6 +14,8 @@ export default function Profile() {
     email: "yangjungwon@gmail.com",
     phone: "088888888888",
   });
+  const [showUbahPopup, setShowUbahPopup] = useState(false);
+  const toggleUbahPopup = () => setShowUbahPopup(!showUbahPopup);
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
@@ -108,7 +111,10 @@ export default function Profile() {
           </div>
 
           <div className="flex mt-4 gap-10">
-            <button className="w-28 bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow">
+            <button
+              className="w-28 bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow"
+              onClick={toggleUbahPopup}
+            >
               Ubah Data
             </button>
             <button
@@ -268,6 +274,16 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {showUbahPopup && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div
+            onClick={toggleUbahPopup}
+            className="absolute inset-0 bg-black/35 backdrop-blur-md"
+          />
+          <HalamanUbahProfile close={toggleUbahPopup} />
+        </div>
+      )}
 
       <Footer />
     </section>

@@ -12,6 +12,7 @@ import {
   HalamanVerif,
   Halamansk,
   HalamanDetail,
+  HalamanUbahProfile,
 } from "./Pages/HalamanUtama";
 import Home from "./Pages/Home.jsx";
 import Beli from "./Pages/Beli.jsx";
