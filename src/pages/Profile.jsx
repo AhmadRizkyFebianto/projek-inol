@@ -6,6 +6,7 @@ import Jual from "../assets/sale-01.png";
 import Edit from "../assets/edit.png";
 import { Bookmark } from "lucide-react";
 import { HalamanUbahProfile } from "../Pages/HalamanUtama";
+import axios from "axios";
 
 export default function Profile() {
   const [profile, setProfile] = useState({
@@ -16,12 +17,78 @@ export default function Profile() {
   });
   const [showUbahPopup, setShowUbahPopup] = useState(false);
   const toggleUbahPopup = () => setShowUbahPopup(!showUbahPopup);
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageError, setImageError] = useState("");
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Clean the file name by replacing spaces with underscores
+      const cleanedFileName = file.name.replace(/\s+/g, "_"); // Replace spaces with underscores
+
+      // Create a new File object with the cleaned name
+      const cleanedFile = new File([file], cleanedFileName, {
+        type: file.type,
+      });
+
+      const fileSizeInMB = file.size / (1024 * 1024); // Convert file size to MB
+      if (fileSizeInMB > 2) {
+        setImageError("File size exceeds 2MB. Please select a smaller file.");
+        setSelectedImage(null);
+        setImageFile(null);
+      } else {
+        setImageError(""); // Clear error message
+        setSelectedImage(URL.createObjectURL(cleanedFile)); // Set image preview
+        setImageFile(cleanedFile); // Set the cleaned file for upload
+      }
+    }
+  };
+
+  const handleEditClick = () => {
+    setShowEdit(!showEdit); // Toggle the form visibility
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("auth_fullname");
     localStorage.removeItem("auth_email");
     window.location.href = "/";
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile) return; // If no file is selected, do nothing
+
+    const formData = new FormData();
+    formData.append("mode", "POST"); // Mode as POST
+    formData.append("action", "uploadfoto"); // Action for uploading image
+    formData.append("email", "ainol@gmail.com"); // Email for identification
+    formData.append("image", imageFile); // Append the image file
+
+    try {
+      const response = await axios.post(
+        "https://smataco.my.id/dev/unez/CariRumahAja/routes/user.php", // Correct API endpoint
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensure the content type is set correctly for file upload
+          },
+        }
+      );
+
+      // Handle successful response
+      console.log("Image uploaded successfully:", response.data);
+
+      // Close the popup after successful upload
+      setShowEdit(false);
+    } catch (error) {
+      // Handle error: display it for debugging
+      console.error(
+        "Error uploading image:",
+        error.response?.data || error.message
+      );
+    }
   };
 
   useEffect(() => {
@@ -53,13 +120,21 @@ export default function Profile() {
 
       <div className="flex justify-center">
         <div className="flex flex-col mt-5 gap-y-2.5">
-          <img src={ProfileImage} alt="" className="rounded-full w-30" />
-          <a className="flex h-5 w-28 border-2 border-black items-center py-4 px-4 gap-4 rounded-full">
+          <img
+            src={selectedImage || ProfileImage} // Use selected image or default image
+            alt="Profile"
+            className="rounded-full w-30"
+          />
+          <button
+            onClick={handleEditClick} // Show the edit form when clicked
+            className="flex h-5 w-28 border-2 border-black items-center py-4 px-4 gap-4 rounded-full"
+          >
             <img src={Edit} alt="" width="20" />
             <div>Edit</div>
-          </a>
+          </button>
         </div>
       </div>
+
       <div className="flex flex-col lg:flex-row items-start mx-5 lg:mx-40 my-10 gap-10">
         <div className="bg-gray-100 flex flex-col justify-center border border-yellow-300 rounded-lg px-5 lg:px-15 py-5 w-full lg:w-auto">
           <div>
@@ -288,6 +363,43 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {imageError && (
+        <div className="text-red-500 text-sm mt-4">{imageError}</div>
+      )}
+
+      {showEdit && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div
+            onClick={handleEditClick}
+            className="absolute inset-0 bg-black/35 backdrop-blur-md"
+          />
+          <div className="bg-white p-5 rounded-lg shadow-md z-50">
+            <form className="flex flex-col gap-4">
+              <label
+                htmlFor="imageUpload"
+                className="text-sm font-medium text-gray-700"
+              >
+                Upload a new profile picture
+              </label>
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*" // Only allow image files
+                onChange={handleImageChange} // Handle file selection
+                className="px-[0.20rem] py-1 rounded-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+              <button
+                type="button"
+                onClick={uploadImage} // Upload image to the API
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+              >
+                Upload
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {showUbahPopup && (
         <div className="fixed inset-0 flex justify-center items-center z-50">
