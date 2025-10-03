@@ -87,8 +87,8 @@ export default function Beli() {
   const [itemsPerPage] = useState(12); // Jumlah kartu sudah 12
   const { search } = useLocation(); // Get query parameters from the URL
   const queryParams = new URLSearchParams(search);
-  const minPrice = queryParams.get("minPrice");
-  const maxPrice = queryParams.get("maxPrice");
+  const minPrice = queryParams.get("minHarga");
+  const maxPrice = queryParams.get("maxHarga");
   const province = queryParams.get("province");
 
   useEffect(() => {
@@ -99,12 +99,11 @@ export default function Beli() {
       province: province,
     });
     axios
-      .get(API_ENDPOINT, {
-        params: {
-          min_price: minPrice,
-          max_price: maxPrice,
-          province: province,
-        },
+      .post(API_ENDPOINT, {
+        minHarga: minPrice,
+        maxHarga: maxPrice,
+        provinsi: province,
+        mode: "filter_properti",
       })
       .then((res) => {
         setDataRumah(res.data);
