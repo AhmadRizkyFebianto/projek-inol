@@ -3,7 +3,7 @@ import Button from "../Elements/Button";
 import { useNavigate } from "react-router-dom";
 import API from "../../Config/Endpoint";
 
-const UbahProfile = ({ onProfileUpdate, close }) => {
+const UbahProfile = ({ close, onUpdate }) => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     nama: "",
@@ -50,36 +50,26 @@ const UbahProfile = ({ onProfileUpdate, close }) => {
       .then((response) => {
         console.log(response);
         if (response.status === "success") {
-          console.log("Data yang dikirim ke onProfileUpdate:", {
-            nama: name, // Kirim nama terbaru
-            email: profile.email, // Kirim email dari profile
-            phone: no, // Kirim no telepon terbaru
-          });
-          onProfileUpdate({
-            nama: name, // Kirim nama terbaru
-            email: profile.email,
-            phone: no, // Kirim no telepon terbaru
-          });
-          close(); // Menutup popup setelah update
-          navigate("/profile");
+          alert(response.message);
+          const data = {
+            nama: final_name,
+            phone: final_no,
+          };
+          localStorage.setItem("auth_fullname", final_name);
+          localStorage.setItem("auth_phone", final_no);
+          onUpdate(data);
         } else {
           alert(
             response.message || "Ubah Data gagal. Periksa kembali data Anda."
           );
         }
-      })
-      .catch((error) => {
-        console.error("Error saat fetch:", error);
-        alert("Terjadi kesalahan pada jaringan. Silakan coba lagi.");
       });
   }
 
   return (
     <>
       <form
-        className={`w-full flex flex-col items-center gap-6 transition-all duration-200 ${
-          showPopup ? "blur-sm" : ""
-        }`}
+        className="w-full flex flex-col items-center gap-6 transition-all duration-200"
         method="POST"
       >
         <div className="mt-10 flex flex-col gap-5 ml-5">

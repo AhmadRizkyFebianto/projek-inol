@@ -24,22 +24,28 @@ export default function Profile() {
     window.location.href = "/";
   };
 
-  const handleProfileUpdate = (updatedProfile) => {
-    console.log("Data yang diterima di handleProfileUpdate:", updatedProfile);
-    setProfile({
-      ...profile,
-      ...updatedProfile,
-    });
-  };
-
   useEffect(() => {
+    const storedFullname = localStorage.getItem("auth_fullname");
+    const storedEmail = localStorage.getItem("auth_email");
+    const storedPhone = localStorage.getItem("auth_phone");
+
     setProfile({
-      nama: localStorage.getItem("auth_fullname") || "Yang Jungwon",
-      lokasi: "Bandung", // tidak ada di localStorage → pakai default
-      email: localStorage.getItem("auth_email") || "yangjungwon@gmail.com",
-      phone: localStorage.getItem("auth_phone") || "088888888888",
+      nama: storedFullname || "Yang Jungwon", // Default name if not found
+      lokasi: "Bandung", // Default location if not found
+      email: storedEmail || "yangjungwon@gmail.com", // Default email if not found
+      phone: storedPhone || "088888888888", // Default phone if not found
     });
-  }, []);
+  }, []); // This will run once when the component is first rendered
+
+  const handleProfileUpdate = (updatedData) => {
+    // Update localStorage with the new data
+    localStorage.setItem("auth_fullname", updatedData.nama);
+    localStorage.setItem("auth_phone", updatedData.phone);
+
+    // Update the profile state to reflect changes
+    setProfile(updatedData);
+    setShowUbahPopup(!showUbahPopup);
+  };
 
   return (
     <section className="min-h-screen">
@@ -290,7 +296,7 @@ export default function Profile() {
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
           <HalamanUbahProfile
-            onProfileUpdate={handleProfileUpdate}
+            onUpdate={handleProfileUpdate}
             close={toggleUbahPopup}
           />
         </div>

@@ -99,13 +99,13 @@ const HalamanDetail = () => {
   return <DetailLayout />;
 };
 
-const HalamanUbahProfile = ({ close }) => {
+const HalamanUbahProfile = ({ close, onUpdate }) => {
   return (
     <div className="relative min-h-screen flex items-center justify-center ">
       <div className="absolute inset-0  blur-sm"></div>
       <div className="relative z-10">
         <UbahProfileLayout title={"Ubah Data"} onBack={close}>
-          <UbahProfile />
+          <UbahProfile onUpdate={onUpdate} />
         </UbahProfileLayout>
       </div>
     </div>

@@ -31,8 +31,8 @@ export default function Search() {
   const handleFilterSubmit = () => {
     // Build the query string with filter parameters
     const filterParams = new URLSearchParams({
-      minPrice: minPrice,
-      maxPrice: maxPrice,
+      minHarga: minPrice,
+      maxHarga: maxPrice,
       province: selectedProvince,
     }).toString();
 
