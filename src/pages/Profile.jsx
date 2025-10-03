@@ -24,6 +24,14 @@ export default function Profile() {
     window.location.href = "/";
   };
 
+  const handleProfileUpdate = (updatedProfile) => {
+    console.log("Data yang diterima di handleProfileUpdate:", updatedProfile);
+    setProfile({
+      ...profile,
+      ...updatedProfile,
+    });
+  };
+
   useEffect(() => {
     setProfile({
       nama: localStorage.getItem("auth_fullname") || "Yang Jungwon",
@@ -281,7 +289,10 @@ export default function Profile() {
             onClick={toggleUbahPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanUbahProfile close={toggleUbahPopup} />
+          <HalamanUbahProfile
+            onProfileUpdate={handleProfileUpdate}
+            close={toggleUbahPopup}
+          />
         </div>
       )}
 
