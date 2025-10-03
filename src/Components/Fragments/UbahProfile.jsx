@@ -61,6 +61,7 @@ const UbahProfile = ({ onProfileUpdate, close }) => {
             phone: no, // Kirim no telepon terbaru
           });
           close(); // Menutup popup setelah update
+          navigate("/profile");
         } else {
           alert(
             response.message || "Ubah Data gagal. Periksa kembali data Anda."
