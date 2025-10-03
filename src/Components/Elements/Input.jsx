@@ -1,8 +1,15 @@
-const Input = ({ label, type, name, placeholder, className,value,onChange }) => {
+const Input = ({
+  label,
+  type,
+  name,
+  placeholder,
+  className,
+  value,
+  onChange,
+}) => {
   const handleChange = (event) => {
-    onChange(event.target.value)
-  }
-
+    onChange(event.target.value);
+  };
 
   return (
     <div className="flex flex-col items-start w-[278px]">
@@ -21,6 +28,5 @@ const Input = ({ label, type, name, placeholder, className,value,onChange }) => 
       />
     </div>
   );
-
-  }
+};
 export default Input;

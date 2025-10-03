@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios"; // Ditambahkan: Impor axios yang hilang
+import { useLocation } from "react-router-dom";
 
 // Import komponen UI
 import Search from "../Components/Elements/Search";
@@ -7,8 +8,10 @@ import Footer from "../Components/Elements/Footer";
 import Navbar from "../Components/Elements/Navbar";
 
 // --- Konstanta ---
-const API_ENDPOINT = "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?mode=latest";
-const IMAGE_BASE_URL = "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
+const API_ENDPOINT =
+  "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=filter_properti";
+const IMAGE_BASE_URL =
+  "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
 // --- Komponen Pendukung ---
 
@@ -40,7 +43,7 @@ const PropertyCard = ({ item }) => (
           {item.ref_id}
         </h3>
         <img
-          src={IMAGE_BASE_URL} // Menggunakan konstanta
+          src="https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg"
           alt={item.cluster_apart_name}
           className="object-cover w-full h-full"
           loading="lazy"
@@ -82,28 +85,35 @@ export default function Beli() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(12); // Jumlah kartu sudah 12
+  const { search } = useLocation(); // Get query parameters from the URL
+  const queryParams = new URLSearchParams(search);
+  const minPrice = queryParams.get("minPrice");
+  const maxPrice = queryParams.get("maxPrice");
+  const province = queryParams.get("province");
 
-  // Fetch data dari API saat komponen pertama kali dimuat
   useEffect(() => {
     setLoading(true);
+    console.log("Filter Parameters:", {
+      min_price: minPrice,
+      max_price: maxPrice,
+      province: province,
+    });
     axios
-      .get(API_ENDPOINT)
+      .get(API_ENDPOINT, {
+        params: {
+          min_price: minPrice,
+          max_price: maxPrice,
+          province: province,
+        },
+      })
       .then((res) => {
-        // Menangani berbagai kemungkinan format respons API
-        if (Array.isArray(res.data)) {
-          setDataRumah(res.data);
-        } else if (res.data && Array.isArray(res.data.data)) {
-          setDataRumah(res.data.data);
-        } else {
-          setDataRumah([]); // Set ke array kosong jika data tidak valid
-        }
+        setDataRumah(res.data);
       })
       .catch((err) => {
-        console.error("Gagal fetch data:", err);
-        setDataRumah([]); // Set data kosong juga jika terjadi error
+        console.error("Failed to fetch property data:", err);
       })
       .finally(() => setLoading(false));
-  }, []); // Dependency array kosong agar hanya berjalan sekali
+  }, [minPrice, maxPrice, province]);
 
   // Kalkulasi untuk paginasi
   const totalPages = Math.ceil(dataRumah.length / itemsPerPage);
@@ -117,7 +127,8 @@ export default function Beli() {
       .filter((page) => {
         if (totalPages <= 10) return true;
         if (currentPage <= 6) return page <= 10 || page === totalPages;
-        if (currentPage >= totalPages - 5) return page > totalPages - 10 || page === 1;
+        if (currentPage >= totalPages - 5)
+          return page > totalPages - 10 || page === 1;
         return (
           page === 1 ||
           page === totalPages ||
@@ -130,7 +141,9 @@ export default function Beli() {
 
         return (
           <span key={page} className="flex items-center">
-            {showEllipsis && <span className="px-2 py-1 text-gray-500">...</span>}
+            {showEllipsis && (
+              <span className="px-2 py-1 text-gray-500">...</span>
+            )}
             <button
               onClick={() => setCurrentPage(page)}
               className={`px-3 py-1 border rounded ${
@@ -160,7 +173,7 @@ export default function Beli() {
               <SkeletonCard key={i} />
             ))}
           </div>
-        ) : currentData.length === 0 ? (
+        ) : dataRumah.length === 0 ? (
           // Tampilan jika tidak ada data
           <div className="text-center text-gray-500">Tidak ada data</div>
         ) : (
@@ -179,7 +192,9 @@ export default function Beli() {
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                   disabled={currentPage === 1}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >

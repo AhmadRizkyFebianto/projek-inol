@@ -1,33 +1,44 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API from "../../Config/Endpoint";
 
 export default function Search() {
   const [dataProvinsi, setDataProvinsi] = useState([]);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("Provinsi");
+  const [isOpenProvince, setIsOpenProvince] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const endPoint = API.endpointProvinsi;
+  const navigate = useNavigate();
 
-  // Menangani pemanggilan API untuk mendapatkan data provinsi
   useEffect(() => {
     axios
       .get(endPoint)
       .then((res) => {
         if (Array.isArray(res.data)) {
-          setDataProvinsi(res.data); // Jika data berupa array
+          setDataProvinsi(res.data);
         } else if (res.data.data) {
-          setDataProvinsi(res.data.data); // Jika data berada di dalam properti data
+          setDataProvinsi(res.data.data);
         } else {
-          setDataProvinsi([]); // Jika data tidak sesuai
+          setDataProvinsi([]);
         }
       })
       .catch((err) => console.error("Gagal fetch data:", err)); // Menangani error
   }, []);
 
-  console.log(dataProvinsi);
+  const handleFilterSubmit = () => {
+    // Build the query string with filter parameters
+    const filterParams = new URLSearchParams({
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      province: selectedProvince,
+    }).toString();
 
-  const [selectedProvince, setSelectedProvince] = useState("Provinsi");
-
-  const [isOpenProvince, setIsOpenProvince] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
+    // Redirect to the Beli page with the filters in the URL
+    navigate(`/beli?${filterParams}`);
+  };
 
   return (
     <div className="flex justify-center w-full">
@@ -64,18 +75,24 @@ export default function Search() {
               <h2 className="text-center text-lg font-medium">
                 Filter Pencarian
               </h2>
+              {/* Minimal Price */}
               <div className="relative w-full">
                 <input
-                  type="text"
+                  type="number"
                   placeholder="Harga Minimal"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
                   className="w-full rounded-lg border border-blue-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800 bg-white shadow-lg"
                 />
               </div>
 
+              {/* Maksimal Price */}
               <div className="relative w-full">
                 <input
-                  type="text"
+                  type="number"
                   placeholder="Harga Maksimal"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
                   className="w-full rounded-lg border border-blue-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800 bg-white shadow-lg"
                 />
               </div>
@@ -117,12 +134,12 @@ export default function Search() {
                         <li
                           key={idx}
                           onClick={() => {
-                            setSelectedProvince(province.nama); // Misalkan 'nama' adalah properti nama provinsi
+                            setSelectedProvince(province); // Misalkan 'nama' adalah properti nama provinsi
                             setIsOpenProvince(false);
                           }}
                           className="cursor-pointer px-4 py-2 hover:bg-blue-100 text-black"
                         >
-                          {province.nama}{" "}
+                          {province}{" "}
                           {/* Misalkan 'nama' adalah properti nama provinsi */}
                           <div className="border-b border-gray-200 mt-2 last:border-0"></div>
                         </li>
@@ -133,6 +150,14 @@ export default function Search() {
                   </ul>
                 )}
               </div>
+
+              {/* Submit Filter Button */}
+              <button
+                onClick={handleFilterSubmit}
+                className="w-full mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg"
+              >
+                Terapkan Filter
+              </button>
             </div>
           </div>
         )}
