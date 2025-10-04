@@ -4,6 +4,8 @@ import ProfileImage from "../../assets/profile.jpg";
 import Logo from "../../assets/logo.png";
 import Menu from "../../assets/menu.png";
 import Close from "../../assets/close.png";
+import { useNavigate } from "react-router-dom";
+
 import {
   HalamanLogin,
   HalamanRegister,
@@ -12,6 +14,7 @@ import {
 } from "../../Pages/HalamanUtama";
 
 export default function Navbar() {
+   const navigate = useNavigate();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showDaftarPopup, setShowDaftarPopup] = useState(false);
   const [showLKSPopup, setShowLKSPopup] = useState(false);
@@ -24,11 +27,10 @@ export default function Navbar() {
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_fullname");
-    localStorage.removeItem("auth_email");
+    localStorage.clear();
     setUser(null);
-    window.location.href = "/";
+    setProfile({ nama: "", lokasi: "", email: "", phone: "" });
+    navigate("/");
   };
 
   useEffect(() => {

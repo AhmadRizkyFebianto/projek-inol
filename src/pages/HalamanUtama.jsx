@@ -13,12 +13,13 @@ import { LKSLayout } from "../Components/Layouts/LayoutUtama";
 import { VerifLayout } from "../Components/Layouts/LayoutUtama";
 import { UbahProfileLayout } from "../Components/Layouts/LayoutUtama";
 
-const HalamanKSB = () => {
+
+const HalamanKSB = ({ close }) => {
   return (
     <div className="relative min-h-screen flex items-center justify-center ">
       <div className="absolute inset-0  blur-sm"></div>
       <div className="relative z-10">
-        <KSBLayout title="Kata Sandi Baru">
+        <KSBLayout title="Kata Sandi Baru" onBack={close}>
           <KataSandiBaru />
         </KSBLayout>
       </div>
@@ -112,6 +113,10 @@ const HalamanUbahProfile = ({ close, onUpdate }) => {
   );
 };
 
+const HalamanJual = () => {
+  return <Juallayout />;
+};
+
 export {
   HalamanKSB,
   HalamanLKS,
@@ -120,5 +125,6 @@ export {
   HalamanVerif,
   Halamansk,
   HalamanDetail,
+  HalamanJual,
   HalamanUbahProfile,
 };

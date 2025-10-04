@@ -5,22 +5,30 @@ import ProfileImage from "../assets/profile.jpg";
 import Jual from "../assets/sale-01.png";
 import Edit from "../assets/edit.png";
 import { Bookmark } from "lucide-react";
-import { HalamanUbahProfile } from "../Pages/HalamanUtama";
+import { HalamanUbahProfile, HalamanKSB } from "../Pages/HalamanUtama";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function Profile() {
+
+export default function Profile(props) {
   const [profile, setProfile] = useState({
-    nama: "Yang Jungwon",
-    lokasi: "Bandung",
-    email: "yangjungwon@gmail.com",
-    phone: "088888888888",
+    nama: localStorage.getItem("auth_fullname"),
+    lokasi: "",
+    email: localStorage.getItem("auth_email"),
+    phone: localStorage.getItem("auth_phone"),
   });
   const [showUbahPopup, setShowUbahPopup] = useState(false);
   const toggleUbahPopup = () => setShowUbahPopup(!showUbahPopup);
+  const [showUbahPassword, setShowUbahPassword] = useState(false);
+  const toggleUbahPassword = () => setShowUbahPassword(!showUbahPassword);
   const [showEdit, setShowEdit] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imageError, setImageError] = useState("");
+  const [user, setUser] = useState(null);
+  const [city, setCity] = useState(null);
+  const navigate = useNavigate();
+  const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -50,19 +58,60 @@ export default function Profile() {
     setShowEdit(!showEdit); // Toggle the form visibility
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_fullname");
-    localStorage.removeItem("auth_email");
-    window.location.href = "/";
+  const handlePasswordUpdate = () => {
+    console.log("Password updated!");
   };
+
+  // const handleLogout = () => {
+  //   localStorage.removeItem("auth_token");
+  //   localStorage.removeItem("auth_fullname");
+  //   localStorage.removeItem("auth_email");
+  //   localStorage.removeItem("auth_phone");
+  //   setUser(null);
+  //   window.location.href = "/";
+  // };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    setProfile({ nama: "", lokasi: "", email: "", phone: "" });
+    navigate("/");
+  };
+
+  const textLocation = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        // setLatitude(position.coords.latitude);
+        // setLongitude(position.coords.longitude)
+        console.log(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${KeyMaps}`
+        );
+        fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${KeyMaps}`
+        )
+          .then((res) => res.json())
+          .then((response) => {
+            console.log(response);
+            console.log("alamat=" + response.results[0].formatted_address);
+            const city = response.results[0].address_components.find(
+              (component) =>
+                component.types[0].includes("administrative_area_level_2")
+            ).long_name;
+            setProfile((c) => ({ ...c, lokasi: city }));
+          });
+      });
+    }
+  };
+  useEffect(() => {
+    textLocation();
+  }, []);
 
   const uploadImage = async () => {
     if (!imageFile) return; // If no file is selected, do nothing
 
     const formData = new FormData();
-    formData.append("mode", "POST"); // Mode as POST
-    formData.append("action", "uploadfoto"); // Action for uploading image
+    formData.append("mode", "UPDATE"); // Mode as POST
+    formData.append("action", "updateProfilePicture"); // Action for uploading image
     formData.append("email", "ainol@gmail.com"); // Email for identification
     formData.append("image", imageFile); // Append the image file
 
@@ -121,12 +170,17 @@ export default function Profile() {
       <div className="flex justify-center">
         <div className="flex flex-col mt-5 gap-y-2.5">
           <img
-            src={selectedImage || ProfileImage} // Use selected image or default image
+            src={
+              selectedImage ||
+              (user?.image
+                ? `https://smataco.my.id/dev/unez/CariRumahAja/uploads/${user.image}`
+                : ProfileImage)
+            }
             alt="Profile"
             className="rounded-full w-30"
           />
           <button
-            onClick={handleEditClick} // Show the edit form when clicked
+            onClick={handleEditClick}
             className="flex h-5 w-28 border-2 border-black items-center py-4 px-4 gap-4 rounded-full"
           >
             <img src={Edit} alt="" width="20" />
@@ -199,15 +253,24 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="flex mt-4 gap-10">
+          <div className="flex flex-col mt-4 gap-3">
+            <div className="flex gap-4">
+              <button
+                className="w-32 bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow"
+                onClick={toggleUbahPopup}
+              >
+                Ubah Data
+              </button>
+              <button
+                className="w-32 bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow"
+                onClick={toggleUbahPassword}
+              >
+                Ubah Password
+              </button>
+            </div>
+
             <button
-              className="w-28 bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow"
-              onClick={toggleUbahPopup}
-            >
-              Ubah Data
-            </button>
-            <button
-              className="w-28 bg-red-500 px-3 py-2 rounded-lg hover:bg-red-600 transition-all shadow"
+              className="w-full bg-red-500 px-3 py-2 rounded-lg hover:bg-red-600 transition-all shadow self-center"
               onClick={handleLogout}
             >
               Logout
@@ -410,6 +473,19 @@ export default function Profile() {
           <HalamanUbahProfile
             onUpdate={handleProfileUpdate}
             close={toggleUbahPopup}
+          />
+        </div>
+      )}
+
+      {showUbahPassword && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div
+            onClick={toggleUbahPassword}
+            className="absolute inset-0 bg-black/35 backdrop-blur-md"
+          />
+          <HalamanKSB
+            onUpdate={handlePasswordUpdate}
+            close={toggleUbahPassword}
           />
         </div>
       )}
