@@ -17,9 +17,12 @@ export default function Profile(props) {
     phone: "",
     profil: "",
   });
-  const fotoProfil = profile.profil
-    ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${profile.profil}`
-    : ProfileImage;
+const fotoProfil = profile.profil
+  ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${
+      profile.profil
+    }?t=${Date.now()}`
+  : ProfileImage;
+
 
   console.log(profile);
   const [showUbahPopup, setShowUbahPopup] = useState(false);
@@ -95,8 +98,12 @@ export default function Profile(props) {
 
       // Handle successful response
       console.log("Image uploaded successfully:", response.data);
-
+      localStorage.setItem("foto_profil", response.data.filename);
       // Close the popup after successful upload
+      setProfile((prev) => ({
+        ...prev,
+        profil: response.data.filename,
+      }));
       setShowEdit(false);
     } catch (error) {
       // Handle error: display it for debugging
