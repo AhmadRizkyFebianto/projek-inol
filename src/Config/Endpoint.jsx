@@ -11,6 +11,8 @@ const API = {
   endpointImage: "https://smataco.my.id/dev/unez/CariRumahAja/foto",
   endpointProvinsi:
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=get_provinsi",
+  endpointKota:
+    "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=get_kota",
   endpointFilter:
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=filter_properti",
 };

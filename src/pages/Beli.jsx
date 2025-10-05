@@ -3,10 +3,10 @@ import axios from "axios";
 import Search from "../Components/Elements/Search";
 import Footer from "../Components/Elements/Footer";
 import Navbar from "../Components/Elements/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const API_ENDPOINT =
-  "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?mode=latest";
+const API_FILTER =
+  "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=filter_properti";
 const IMAGE_BASE_URL =
   "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
@@ -24,12 +24,9 @@ const SkeletonCard = () => (
   </div>
 );
 
-/**
- * Komponen untuk menampilkan satu kartu properti.
- */
 const PropertyCard = ({ item, onClick }) => (
   <div
-    className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
+    className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30 cursor-pointer"
     onClick={onClick}
   >
     <div className="rounded-xl overflow-hidden relative">
@@ -38,7 +35,7 @@ const PropertyCard = ({ item, onClick }) => (
           {item.ref_id}
         </h3>
         <img
-          src={IMAGE_BASE_URL} // Menggunakan konstanta
+          src={IMAGE_BASE_URL}
           alt={item.cluster_apart_name}
           className="object-cover w-full h-full"
           loading="lazy"
@@ -47,7 +44,7 @@ const PropertyCard = ({ item, onClick }) => (
       <div className="flex items-center justify-between bg-gray-100 p-3">
         <div>
           <h3 className="text-lg font-semibold text-gray-800">
-            {item.cluster_apart_name.slice(0, 15) || "Perumahan"}
+            {item.cluster_apart_name?.slice(0, 15) || "Perumahan"}
           </h3>
           <p className="text-sm text-gray-700">
             {item.city || "Kota Tidak Diketahui"}
@@ -73,48 +70,57 @@ const PropertyCard = ({ item, onClick }) => (
   </div>
 );
 
-// --- Komponen Utama ---
-
 export default function Beli() {
   const [dataRumah, setDataRumah] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(12);
-  const Navigate = useNavigate();
-  const handledetail = (ref_id) => {
-    Navigate("/detailrumah/" + ref_id);
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Fetch data dari API saat komponen pertama kali dimuat
+  const handleDetail = (ref_id) => navigate("/detailrumah/" + ref_id);
+
+  // === FETCH DATA DARI API_FILTER (tanpa atau dengan parameter filter) ===
   useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const params = {
+      minHarga: queryParams.get("minHarga") || "",
+      maxHarga: queryParams.get("maxHarga") || "",
+      province: queryParams.get("province") || "",
+      city: queryParams.get("city") || "",
+    };
+
     setLoading(true);
+
     axios
-      .get(API_ENDPOINT)
+      .post(API_FILTER, {
+        provinsi: params.province,
+        kota: params.city,
+        minHarga: params.minHarga,
+        maxHarga: params.maxHarga,
+        mode: "filter_properti",
+      })
       .then((res) => {
-        if (Array.isArray(res.data)) {
-          setDataRumah(res.data);
-        } else if (res.data && Array.isArray(res.data.data)) {
+        if (Array.isArray(res.data)) setDataRumah(res.data);
+        else if (res.data.data && Array.isArray(res.data.data))
           setDataRumah(res.data.data);
-        } else {
-          setDataRumah([]);
-        }
+        else setDataRumah([]);
       })
       .catch((err) => {
         console.error("Gagal fetch data:", err);
-        setDataRumah([]); // Set data kosong juga jika terjadi error
+        setDataRumah([]);
       })
       .finally(() => setLoading(false));
-  }, []); // Dependency array kosong agar hanya berjalan sekali
+  }, [location.search]); // Re-fetch saat parameter di URL berubah
 
-  // Kalkulasi untuk paginasi
+  // Pagination
   const totalPages = Math.ceil(dataRumah.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentData = dataRumah.slice(indexOfFirst, indexOfLast);
 
-  // Fungsi untuk membuat tombol-tombol halaman paginasi
-  const renderPaginationButtons = () => {
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
+  const renderPaginationButtons = () =>
+    Array.from({ length: totalPages }, (_, i) => i + 1)
       .filter((page) => {
         if (totalPages <= 10) return true;
         if (currentPage <= 6) return page <= 10 || page === totalPages;
@@ -129,7 +135,6 @@ export default function Beli() {
       .map((page, idx, arr) => {
         const prevPage = arr[idx - 1];
         const showEllipsis = prevPage && page - prevPage > 1;
-
         return (
           <span key={page} className="flex items-center">
             {showEllipsis && (
@@ -148,7 +153,6 @@ export default function Beli() {
           </span>
         );
       });
-  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -156,19 +160,19 @@ export default function Beli() {
       <div className="flex justify-center mt-10">
         <Search />
       </div>
+
       <main className="flex-1 p-6 bg-white">
         {loading ? (
-          // Tampilan loading
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: itemsPerPage }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
         ) : currentData.length === 0 ? (
-          // Tampilan jika tidak ada data
-          <div className="text-center text-gray-500">Tidak ada data</div>
+          <div className="text-center text-gray-500">
+            Tidak ada data ditemukan
+          </div>
         ) : (
-          // Tampilan jika data ada
           <>
             <div
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto"
@@ -178,18 +182,15 @@ export default function Beli() {
                 <PropertyCard
                   key={item.ref_id}
                   item={item}
-                  onClick={() => handledetail(item.ref_id)}
+                  onClick={() => handleDetail(item.ref_id)}
                 />
               ))}
             </div>
 
-            {/* Kontrol Paginasi */}
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
                 <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >
@@ -198,7 +199,7 @@ export default function Beli() {
                 {renderPaginationButtons()}
                 <button
                   onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    setCurrentPage((p) => Math.min(p + 1, totalPages))
                   }
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 border rounded disabled:opacity-50"
@@ -210,6 +211,7 @@ export default function Beli() {
           </>
         )}
       </main>
+
       <Footer />
     </div>
   );
