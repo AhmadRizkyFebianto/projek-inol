@@ -13,6 +13,7 @@ import {
   Halamansk,
   HalamanDetail,
   HalamanUbahProfile,
+  HalamanJual,
 } from "./Pages/HalamanUtama";
 import Home from "./Pages/Home.jsx";
 import Beli from "./Pages/Beli.jsx";
@@ -39,6 +40,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ChatBot />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jualrumah"
+            element={
+              <ProtectedRoute>
+                <HalamanJual />
               </ProtectedRoute>
             }
           />

@@ -9,20 +9,19 @@ import { HalamanUbahProfile, HalamanKSB } from "../Pages/HalamanUtama";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 export default function Profile(props) {
   const [profile, setProfile] = useState({
     nama: "",
     lokasi: "",
     email: "",
     phone: "",
-    profil: ""
+    profil: "",
   });
-  const fotoProfil = profile.profil?
-  `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${profile.profil}` 
-  : ProfileImage
+  const fotoProfil = profile.profil
+    ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${profile.profil}`
+    : ProfileImage;
 
-  console.log(profile)
+  console.log(profile);
   const [showUbahPopup, setShowUbahPopup] = useState(false);
   const toggleUbahPopup = () => setShowUbahPopup(!showUbahPopup);
   const [showUbahPassword, setShowUbahPassword] = useState(false);
@@ -135,7 +134,7 @@ export default function Profile(props) {
       lokasi: " ", // Default location if not found
       email: storedEmail || "yangjungwon@gmail.com", // Default email if not found
       phone: storedPhone || "088888888888", // Default phone if not found
-      profil: storedProfil 
+      profil: storedProfil,
     });
   }, []); // This will run once when the component is first rendered
 

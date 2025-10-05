@@ -1,10 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "../Elements/Input";
 import Button from "../Elements/Button";
 import { useNavigate } from "react-router-dom";
 import API from "../../Config/Endpoint";
 
-const Register = ({}) => {
+const ToastAlert = ({ message, type, isVisible, onClose }) => {
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
+
+  if (!isVisible) return null;
+
+  const bgColor =
+    type === "error"
+      ? "bg-red-100 border-red-500 text-red-700"
+      : "bg-green-100 border-green-500 text-green-700";
+
+  return (
+    <div
+      className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md p-4 rounded-lg shadow-lg border-l-4 ${bgColor} transition-all duration-300 ease-in-out`}
+      role="alert"
+    >
+      <p className="font-bold">{type === "error" ? "Error" : "Success"}</p>
+      <p>{message}</p>
+    </div>
+  );
+};
+
+const Register = ({ onRegisterSuccess, close }) => {
   const navigate = useNavigate();
 
   const [isChecked, setIsChecked] = useState(false);
@@ -19,12 +47,23 @@ const Register = ({}) => {
   const [nomorTelepon, setNomorTelepon] = useState("");
   const [kataSandi, setKataSandi] = useState("");
 
-  const handleNamaLengkapChange = (newValue) => {
-    setNamaLengkap(newValue);
+  // State untuk toast
+  const [toast, setToast] = useState({
+    message: "",
+    type: "error",
+    visible: false,
+  });
+
+  const showToast = (message, type = "error") => {
+    setToast({ message, type, visible: true });
   };
-  const handleEmailChange = (newValue) => {
-    setEmail(newValue);
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, visible: false }));
   };
+
+  const handleNamaLengkapChange = (newValue) => setNamaLengkap(newValue);
+  const handleEmailChange = (newValue) => setEmail(newValue);
   const handleNomorTeleponChange = (newValue) => {
     const numericValue = newValue.replace(/[^0-9]/g, "");
     if (numericValue === "") {
@@ -42,21 +81,20 @@ const Register = ({}) => {
       setNomorTelepon(limitedValue);
     }
   };
-  const handleKataSandiChange = (newValue) => {
-    setKataSandi(newValue);
-  };
+  const handleKataSandiChange = (newValue) => setKataSandi(newValue);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!isChecked) {
-      alert("Anda harus menyetujui Syarat & Ketentuan (S&K).");
+      showToast("Anda harus menyetujui Syarat & Ketentuan (S&K).");
       return;
     }
     setShowPopup(true);
   };
 
-  function confirmSubmit() {
+  const confirmSubmit = () => {
     setShowPopup(false);
+    setShowuptrue(false);
 
     let payload = {
       name: namaLengkap,
@@ -76,35 +114,50 @@ const Register = ({}) => {
       .then((response) => {
         console.log(response);
         if (response.status === "success") {
-          navigate(
-            "/verifikasikode/" +
-              response.kode +
-              "/" +
-              response.name +
-              "/" +
-              response.email
+          showToast(
+            "Akun berhasil dibuat! Mengalihkan ke verifikasi...",
+            "success"
           );
+          setTimeout(() => {
+            if (typeof close === "function") {
+              close();
+            }
+            if (typeof onRegisterSuccess === "function") {
+              onRegisterSuccess({
+                kode: response.kode,
+                name: response.name,
+                email: response.email,
+              });
+            }
+          }, 1500);
         } else {
-          alert(
+          showToast(
             response.message || "Pendaftaran gagal. Periksa kembali data Anda."
           );
         }
       })
       .catch((error) => {
         console.error("Error saat fetch:", error);
-        alert("Terjadi kesalahan pada jaringan. Silakan coba lagi.");
+        showToast("Terjadi kesalahan pada jaringan. Silakan coba lagi.");
       });
-  }
+  };
+
   return (
     <>
+      <ToastAlert
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.visible}
+        onClose={hideToast}
+      />
+
       <form
         className={`w-full flex flex-col items-center gap-6 transition-all duration-200 ${
-          (showPopup, showPopuptrue ? "blur-sm" : "")
+          showPopup || showPopuptrue ? "blur-sm" : ""
         }`}
-        method="POST"
         onSubmit={handleSubmit}
       >
-        <div className="mt-10 flex flex-col gap-5 ml-5 ">
+        <div className="mt-10 flex flex-col gap-5 ml-5">
           <div>
             <label className="font-jakarta text-xs">Nama lengkap</label>
             <Input
@@ -123,7 +176,6 @@ const Register = ({}) => {
               name="email"
               value={email}
               className="font-jakarta text-xs text-black"
-              //value={data.email}
               onChange={handleEmailChange}
             />
           </div>
@@ -137,7 +189,6 @@ const Register = ({}) => {
               value={nomorTelepon}
               className="font-jakarta text-xs text-black"
               maxLength="15"
-              //value={data.nomer_telepon}
               onChange={handleNomorTeleponChange}
             />
           </div>
@@ -150,7 +201,6 @@ const Register = ({}) => {
                 name="kata_sandi"
                 value={kataSandi}
                 className="w-full h-[29px] rounded-full border border-[#F4D77B] px-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#2067C5] bg-white"
-                //value={data.kata_sandi}
                 onChange={handleKataSandiChange}
               />
               <button
@@ -184,7 +234,7 @@ const Register = ({}) => {
             </span>
           </div>
 
-          <Button type="submit" className="w-[114px] mt-4 mx-auto ">
+          <Button type="submit" className="w-[114px] mt-4 mx-auto">
             Daftar
           </Button>
         </div>
@@ -196,10 +246,16 @@ const Register = ({}) => {
             <h1 className="font-jakarta text-base text-center">
               Apakah kamu sudah yakin <br /> untuk mendaftar akun?
             </h1>
-
             <div className="flex gap-[73px] mt-[50px]">
               <Button onClick={() => setShowPopup(false)}>Tidak</Button>
-              <Button onClick={() => setShowuptrue(true)}>Iya</Button>
+              <Button
+                onClick={() => {
+                  setShowPopup(false);
+                  setShowuptrue(true);
+                }}
+              >
+                Iya
+              </Button>
             </div>
           </div>
         </div>
@@ -213,17 +269,8 @@ const Register = ({}) => {
               Silahkan kembali masuk untuk menggunakan <br />
               layanan kami”
             </h1>
-
             <div className="flex gap-[73px] mt-[24px]">
-              <Button
-                onClick={() => {
-                  setShowuptrue(false);
-                  setShowPopup(false);
-                  confirmSubmit();
-                }}
-              >
-                Iya
-              </Button>
+              <Button onClick={confirmSubmit}>Iya</Button>
             </div>
           </div>
         </div>

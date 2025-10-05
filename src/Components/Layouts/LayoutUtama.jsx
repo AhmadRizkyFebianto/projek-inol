@@ -4,6 +4,7 @@ import Logo from "../../assets/logo.png";
 import DetailRumah from "../Fragments/DetailRumah";
 import Footer from "../Elements/Footer";
 import Navbar from "../Elements/Navbar";
+import JualRumah from "../Fragments/JualRumah";
 
 const LoginLayout = (props) => {
   const { title, children, height = "640px", onBack } = props;
@@ -139,6 +140,18 @@ const UbahProfileLayout = (props) => {
   );
 };
 
+const Juallayout = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 mb-[48px] mt-[48px]">
+        <JualRumah />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 export {
   LoginLayout,
   KSBLayout,
@@ -148,4 +161,5 @@ export {
   VerifLayout,
   DetailLayout,
   UbahProfileLayout,
+  Juallayout,
 };
