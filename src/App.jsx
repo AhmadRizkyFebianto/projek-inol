@@ -45,9 +45,9 @@ function App() {
           <Route
             path="/profile"
             element={
-              <protectedRoute>
+              <ProtectedRoute>
                 <Profile />
-              </protectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route path="/login" element={<HalamanLogin />} />

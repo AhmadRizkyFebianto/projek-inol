@@ -20,7 +20,7 @@ const HalamanKSB = ({ close }) => {
       <div className="absolute inset-0  blur-sm"></div>
       <div className="relative z-10">
         <KSBLayout title="Kata Sandi Baru" onBack={close}>
-          <KataSandiBaru />
+          <KataSandiBaru close={close} />
         </KSBLayout>
       </div>
     </div>

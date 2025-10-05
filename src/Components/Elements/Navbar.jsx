@@ -23,6 +23,12 @@ export default function Navbar() {
   const [user, setUser] = useState(null); // ✅ state user
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const nameImage = localStorage.getItem("foto_profil");
+  const image =
+    nameImage && nameImage.trim() !== "" && nameImage !== "null"
+      ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${nameImage}`
+      : ProfileImage;
+
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -127,9 +133,10 @@ export default function Navbar() {
                     onClick={toggleDropdown}
                   >
                     <img
-                      src={ProfileImage}
+                      src={image}
                       alt="Profile"
                       className="rounded-full w-8"
+                      onError={(e) => (e.currentTarget.src = ProfileImage)}
                     />
                   </div>
 
@@ -231,9 +238,10 @@ export default function Navbar() {
                 onClick={toggleDropdown}
               >
                 <img
-                  src={ProfileImage}
+                  src={image}
                   alt="Profile"
                   className="rounded-full w-8"
+                  onError={(e) => (e.currentTarget.src = ProfileImage)}
                 />
               </div>
 

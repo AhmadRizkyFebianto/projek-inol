@@ -12,11 +12,17 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profile(props) {
   const [profile, setProfile] = useState({
-    nama: localStorage.getItem("auth_fullname"),
+    nama: "",
     lokasi: "",
-    email: localStorage.getItem("auth_email"),
-    phone: localStorage.getItem("auth_phone"),
+    email: "",
+    phone: "",
+    profil: ""
   });
+  const fotoProfil = profile.profil?
+  `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${profile.profil}` 
+  : ProfileImage
+
+  console.log(profile)
   const [showUbahPopup, setShowUbahPopup] = useState(false);
   const toggleUbahPopup = () => setShowUbahPopup(!showUbahPopup);
   const [showUbahPassword, setShowUbahPassword] = useState(false);
@@ -26,7 +32,6 @@ export default function Profile(props) {
   const [imageFile, setImageFile] = useState(null);
   const [imageError, setImageError] = useState("");
   const [user, setUser] = useState(null);
-  const [city, setCity] = useState(null);
   const navigate = useNavigate();
   const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
 
@@ -62,15 +67,6 @@ export default function Profile(props) {
     console.log("Password updated!");
   };
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("auth_token");
-  //   localStorage.removeItem("auth_fullname");
-  //   localStorage.removeItem("auth_email");
-  //   localStorage.removeItem("auth_phone");
-  //   setUser(null);
-  //   window.location.href = "/";
-  // };
-
   const handleLogout = () => {
     localStorage.clear();
     setUser(null);
@@ -78,41 +74,13 @@ export default function Profile(props) {
     navigate("/");
   };
 
-  const textLocation = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        // setLatitude(position.coords.latitude);
-        // setLongitude(position.coords.longitude)
-        console.log(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${KeyMaps}`
-        );
-        fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${KeyMaps}`
-        )
-          .then((res) => res.json())
-          .then((response) => {
-            console.log(response);
-            console.log("alamat=" + response.results[0].formatted_address);
-            const city = response.results[0].address_components.find(
-              (component) =>
-                component.types[0].includes("administrative_area_level_2")
-            ).long_name;
-            setProfile((c) => ({ ...c, lokasi: city }));
-          });
-      });
-    }
-  };
-  useEffect(() => {
-    textLocation();
-  }, []);
-
   const uploadImage = async () => {
     if (!imageFile) return; // If no file is selected, do nothing
 
     const formData = new FormData();
     formData.append("mode", "UPDATE"); // Mode as POST
     formData.append("action", "updateProfilePicture"); // Action for uploading image
-    formData.append("email", "ainol@gmail.com"); // Email for identification
+    formData.append("email", profile.email); // Email for identification
     formData.append("image", imageFile); // Append the image file
 
     try {
@@ -144,12 +112,30 @@ export default function Profile(props) {
     const storedFullname = localStorage.getItem("auth_fullname");
     const storedEmail = localStorage.getItem("auth_email");
     const storedPhone = localStorage.getItem("auth_phone");
+    const storedProfil = localStorage.getItem("foto_profil");
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${KeyMaps}`
+        )
+          .then((res) => res.json())
+          .then((response) => {
+            const city = response.results[0].address_components.find(
+              (component) =>
+                component.types[0].includes("administrative_area_level_2")
+            ).long_name;
+            setProfile((c) => ({ ...c, lokasi: city }));
+          });
+      });
+    }
 
     setProfile({
       nama: storedFullname || "Yang Jungwon", // Default name if not found
-      lokasi: "Bandung", // Default location if not found
+      lokasi: " ", // Default location if not found
       email: storedEmail || "yangjungwon@gmail.com", // Default email if not found
       phone: storedPhone || "088888888888", // Default phone if not found
+      profil: storedProfil 
     });
   }, []); // This will run once when the component is first rendered
 
@@ -170,14 +156,10 @@ export default function Profile(props) {
       <div className="flex justify-center">
         <div className="flex flex-col mt-5 gap-y-2.5">
           <img
-            src={
-              selectedImage ||
-              (user?.image
-                ? `https://smataco.my.id/dev/unez/CariRumahAja/uploads/${user.image}`
-                : ProfileImage)
-            }
+            src={fotoProfil}
             alt="Profile"
             className="rounded-full w-30"
+            // onError={(e) => (e.currentTarget.src = ProfileImage)}
           />
           <button
             onClick={handleEditClick}
@@ -352,6 +334,79 @@ export default function Profile(props) {
             </div>
           </div>
 
+          {/* Bagian Beli */}
+          <div className="w-full mb-10">
+            <div className="flex gap-3 mb-5 ml-2 lg:ml-0">
+              {/* ganti foto nya ya kalo dah ada */}
+              <img src={Jual} alt="" width="24" />
+              <h1 className="font-semibold text-lg">Beli</h1>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+              <div className="rounded-xl shadow-md bg-white overflow-hidden">
+                <div className="w-full bg-gray-300 h-30" />
+                <div className="flex items-start justify-between p-3">
+                  <div className="flex flex-col">
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Perumahan Griya
+                    </h3>
+                    <p className="text-gray-700 text-sm">Jakarta Timur</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      LT 97m² | LB 78m² | L1
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="bg-yellow-400 text-gray-900 font-semibold text-xs px-2 py-1 rounded">
+                      Rp 2.589.500
+                    </span>
+                    <p className="text-xs text-gray-600 mt-1">Transaksi</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl shadow-md bg-white overflow-hidden">
+                <div className="w-full bg-gray-300 h-30" />
+                <div className="flex items-start justify-between p-3">
+                  <div className="flex flex-col">
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Perumahan Griya
+                    </h3>
+                    <p className="text-gray-700 text-sm">Jakarta Timur</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      LT 97m² | LB 78m² | L1
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="bg-yellow-400 text-gray-900 font-semibold text-xs px-2 py-1 rounded">
+                      Rp 2.589.500
+                    </span>
+                    <p className="text-xs text-gray-600 mt-1">Transaksi</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl shadow-md bg-white overflow-hidden">
+                <div className="w-full bg-gray-300 h-30" />
+                <div className="flex items-start justify-between p-3">
+                  <div className="flex flex-col">
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Perumahan Griya
+                    </h3>
+                    <p className="text-gray-700 text-sm">Jakarta Timur</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      LT 97m² | LB 78m² | L1
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="bg-yellow-400 text-gray-900 font-semibold text-xs px-2 py-1 rounded">
+                      Rp 2.589.500
+                    </span>
+                    <p className="text-xs text-gray-600 mt-1">Transaksi</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           {/* Bagian Favorit tetap sama */}
           <div className="w-full">
             <div className="flex gap-3 mb-5 ml-2 lg:ml-0">
