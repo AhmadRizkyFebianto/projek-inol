@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import SK from "../Fragments/SK";
 import Logo from "../../assets/logo.png";
 import DetailRumah from "../Fragments/DetailRumah";
+import DetailJual from "../Fragments/DetailJual";
 import Footer from "../Elements/Footer";
 import Navbar from "../Elements/Navbar";
 import JualRumah from "../Fragments/JualRumah";
@@ -130,6 +131,19 @@ const DetailLayout = () => {
   );
 };
 
+const DetailJualLayout = () => {
+  return (
+    <div>
+      <Navbar />
+      <main className="flex-1">
+        <DetailJual />
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
 const UbahProfileLayout = (props) => {
   const { title, children, onBack } = props;
   return (
@@ -162,4 +176,5 @@ export {
   DetailLayout,
   UbahProfileLayout,
   Juallayout,
+  DetailJualLayout,
 };

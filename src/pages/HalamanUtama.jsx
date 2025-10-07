@@ -5,7 +5,11 @@ import Register from "../Components/Fragments/Register";
 import SK from "../Components/Fragments/SK";
 import OTPInput from "../Components/Fragments/VerifikasiKode";
 import UbahProfile from "../Components/Fragments/UbahProfile";
-import { DetailLayout, SKLayout } from "../Components/Layouts/LayoutUtama";
+import {
+  DetailLayout,
+  SKLayout,
+  DetailJualLayout,
+} from "../Components/Layouts/LayoutUtama";
 import { KSBLayout } from "../Components/Layouts/LayoutUtama";
 import { LoginLayout } from "../Components/Layouts/LayoutUtama";
 import { RegisterLayout } from "../Components/Layouts/LayoutUtama";
@@ -108,6 +112,10 @@ const HalamanDetail = () => {
   return <DetailLayout />;
 };
 
+const HalamanDetailJual = () => {
+  return <DetailJualLayout />;
+};
+
 const HalamanUbahProfile = ({ close, onUpdate }) => {
   return (
     <div className="relative min-h-screen flex items-center justify-center ">
@@ -135,4 +143,5 @@ export {
   HalamanDetail,
   HalamanJual,
   HalamanUbahProfile,
+  HalamanDetailJual,
 };

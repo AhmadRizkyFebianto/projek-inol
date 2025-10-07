@@ -17,12 +17,11 @@ export default function Profile(props) {
     phone: "",
     profil: "",
   });
-const fotoProfil = profile.profil
-  ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${
-      profile.profil
-    }?t=${Date.now()}`
-  : ProfileImage;
-
+  const fotoProfil = profile.profil
+    ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${
+        profile.profil
+      }?t=${Date.now()}`
+    : ProfileImage;
 
   console.log(profile);
   const [showUbahPopup, setShowUbahPopup] = useState(false);
@@ -340,79 +339,6 @@ const fotoProfil = profile.profil
             </div>
           </div>
 
-          {/* Bagian Beli */}
-          <div className="w-full mb-10">
-            <div className="flex gap-3 mb-5 ml-2 lg:ml-0">
-              {/* ganti foto nya ya kalo dah ada */}
-              <img src={Jual} alt="" width="24" />
-              <h1 className="font-semibold text-lg">Beli</h1>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
-              <div className="rounded-xl shadow-md bg-white overflow-hidden">
-                <div className="w-full bg-gray-300 h-30" />
-                <div className="flex items-start justify-between p-3">
-                  <div className="flex flex-col">
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      Perumahan Griya
-                    </h3>
-                    <p className="text-gray-700 text-sm">Jakarta Timur</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      LT 97m² | LB 78m² | L1
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="bg-yellow-400 text-gray-900 font-semibold text-xs px-2 py-1 rounded">
-                      Rp 2.589.500
-                    </span>
-                    <p className="text-xs text-gray-600 mt-1">Transaksi</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-xl shadow-md bg-white overflow-hidden">
-                <div className="w-full bg-gray-300 h-30" />
-                <div className="flex items-start justify-between p-3">
-                  <div className="flex flex-col">
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      Perumahan Griya
-                    </h3>
-                    <p className="text-gray-700 text-sm">Jakarta Timur</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      LT 97m² | LB 78m² | L1
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="bg-yellow-400 text-gray-900 font-semibold text-xs px-2 py-1 rounded">
-                      Rp 2.589.500
-                    </span>
-                    <p className="text-xs text-gray-600 mt-1">Transaksi</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-xl shadow-md bg-white overflow-hidden">
-                <div className="w-full bg-gray-300 h-30" />
-                <div className="flex items-start justify-between p-3">
-                  <div className="flex flex-col">
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      Perumahan Griya
-                    </h3>
-                    <p className="text-gray-700 text-sm">Jakarta Timur</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      LT 97m² | LB 78m² | L1
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="bg-yellow-400 text-gray-900 font-semibold text-xs px-2 py-1 rounded">
-                      Rp 2.589.500
-                    </span>
-                    <p className="text-xs text-gray-600 mt-1">Transaksi</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           {/* Bagian Favorit tetap sama */}
           <div className="w-full">
             <div className="flex gap-3 mb-5 ml-2 lg:ml-0">
