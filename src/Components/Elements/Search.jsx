@@ -6,6 +6,7 @@ import API from "../../Config/Endpoint";
 export default function Search() {
   const [dataProvinsi, setDataProvinsi] = useState([]);
   const [dataKota, setDataKota] = useState([]);
+  const [keyword, setKeyword] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("Provinsi");
@@ -19,6 +20,7 @@ export default function Search() {
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
+    setKeyword(queryParams.get("search") || "");
     const qMin = queryParams.get("minHarga") || "";
     const qMax = queryParams.get("maxHarga") || "";
     const qProv = queryParams.get("province") || "Provinsi";
@@ -68,19 +70,49 @@ export default function Search() {
     }
   }, [selectedProvince]);
 
-  const handleFilterSubmit = () => {
-    const filterParams = new URLSearchParams({
-      minHarga: minPrice,
-      maxHarga: maxPrice,
-      province: selectedProvince,
-      city: selectedCity,
-    }).toString();
+  const buildQueryParams = () => {
+    const filterParams = new URLSearchParams();
 
+    if (keyword) filterParams.append("search", keyword);
+    if (minPrice) filterParams.append("minHarga", minPrice);
+    if (maxPrice) filterParams.append("maxHarga", maxPrice);
+    if (selectedProvince && selectedProvince !== "Provinsi")
+      filterParams.append("province", selectedProvince);
+    if (selectedCity && selectedCity !== "Kota")
+      filterParams.append("city", selectedCity);
+
+    return filterParams.toString();
+  };
+
+  const handleSearchEnter = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      // Jika semua filter kosong → tidak lakukan pencarian
+      if (
+        !keyword.trim() &&
+        !minPrice &&
+        !maxPrice &&
+        selectedProvince === "Provinsi" &&
+        selectedCity === "Kota"
+      ) {
+        alert("Isi minimal satu filter atau kata kunci untuk mencari!");
+        return;
+      }
+
+      const queryString = buildQueryParams();
+      navigate(`/beli?${queryString}`);
+      setShowFilter(false);
+    }
+  };
+
+  const handleFilterSubmit = () => {
+    const queryString = buildQueryParams();
     if (location.pathname === "/beli") {
-      navigate(`/beli?${filterParams}`, { replace: true });
+      navigate(`/beli?${queryString}`, { replace: true });
       setShowFilter(false);
     } else {
-      navigate(`/beli?${filterParams}`);
+      navigate(`/beli?${queryString}`);
     }
   };
 
@@ -92,8 +124,9 @@ export default function Search() {
             type="text"
             placeholder="Filter Pencarian…"
             className="w-full rounded-full border border-yellow-500 px-6 py-3 pl-20 focus:outline-none focus:ring-2 focus:ring-yellow-700 bg-gray-50 shadow-lg"
-            onClick={() => setShowFilter(!showFilter)}
-            readOnly
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={handleSearchEnter}
           />
           <div
             className="absolute inset-y-0 left-9 flex items-center cursor-pointer"

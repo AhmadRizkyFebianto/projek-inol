@@ -84,6 +84,7 @@ export default function Beli() {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const params = {
+      search: queryParams.get("search") || "",
       minHarga: queryParams.get("minHarga") || "",
       maxHarga: queryParams.get("maxHarga") || "",
       province: queryParams.get("province") || "",
@@ -94,6 +95,7 @@ export default function Beli() {
 
     axios
       .post(API_FILTER, {
+        search: params.search,
         provinsi: params.province,
         kota: params.city,
         minHarga: params.minHarga,
