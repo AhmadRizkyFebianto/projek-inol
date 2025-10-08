@@ -27,14 +27,7 @@ function App() {
         <GlobalLoader />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route
-            path="/kpr"
-            element={
-              <ProtectedRoute>
-                <KprPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/kpr" element={<KprPage />} />
           <Route
             path="/chatbot"
             element={
@@ -68,24 +61,8 @@ function App() {
             element={<HalamanVerif />}
           />
           <Route path="/syaratdanketentuan" element={<Halamansk />} />
-          <Route
-            path="/beli"
-            element={
-              <ProtectedRoute>
-                {" "}
-                <Beli />{" "}
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/detailrumah/:refid"
-            element={
-              <ProtectedRoute>
-                {" "}
-                <HalamanDetail />{" "}
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/beli" element={<Beli />} />
+          <Route path="/detailrumah/:refid" element={<HalamanDetail />} />
         </Routes>
       </BrowserRouter>
     </LoadingProvider>

@@ -58,9 +58,7 @@ const PropertyCard = ({ item, onClick }) => (
           <span className="block text-sm font-semibold text-gray-800 bg-yellow-400 px-3 rounded-lg">
             Rp{" "}
             {item.property_price
-              ? new Intl.NumberFormat("id-ID").format(
-                  item.property_price.slice(0, -2)
-                )
+              ? new Intl.NumberFormat("id-ID").format(item.property_price)
               : "N/A"}
           </span>
           <p className="text-xs text-gray-600 mt-1">Transaksi</p>

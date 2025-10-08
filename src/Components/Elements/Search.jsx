@@ -14,10 +14,12 @@ export default function Search() {
   const [isOpenProvince, setIsOpenProvince] = useState(false);
   const [isOpenCity, setIsOpenCity] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [sortOrder, setSortOrder] = useState("asc"); 
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Ambil query params dari URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setKeyword(queryParams.get("search") || "");
@@ -32,6 +34,7 @@ export default function Search() {
     setSelectedCity(qCity);
   }, [location.search]);
 
+  // Fetch provinsi
   useEffect(() => {
     axios
       .get(API.endpointProvinsi)
@@ -47,12 +50,12 @@ export default function Search() {
       .catch((err) => console.error("Gagal fetch provinsi:", err));
   }, []);
 
+  // Fetch kota berdasarkan provinsi
   useEffect(() => {
     if (selectedProvince && selectedProvince !== "Provinsi") {
       const endPointCity = `${API.endpointKota}&provinsi=${encodeURIComponent(
         selectedProvince
       )}`;
-
       axios
         .get(endPointCity)
         .then((res) => {
@@ -72,7 +75,6 @@ export default function Search() {
 
   const buildQueryParams = () => {
     const filterParams = new URLSearchParams();
-
     if (keyword) filterParams.append("search", keyword);
     if (minPrice) filterParams.append("minHarga", minPrice);
     if (maxPrice) filterParams.append("maxHarga", maxPrice);
@@ -80,7 +82,6 @@ export default function Search() {
       filterParams.append("province", selectedProvince);
     if (selectedCity && selectedCity !== "Kota")
       filterParams.append("city", selectedCity);
-
     return filterParams.toString();
   };
 
@@ -88,7 +89,6 @@ export default function Search() {
     if (e.key === "Enter") {
       e.preventDefault();
 
-      // Jika semua filter kosong → tidak lakukan pencarian
       if (
         !keyword.trim() &&
         !minPrice &&
@@ -110,15 +110,16 @@ export default function Search() {
     const queryString = buildQueryParams();
     if (location.pathname === "/beli") {
       navigate(`/beli?${queryString}`, { replace: true });
-      setShowFilter(false);
     } else {
       navigate(`/beli?${queryString}`);
     }
+    setShowFilter(false); // Tutup modal setelah klik "Terapkan Filter"
   };
 
   return (
     <div className="flex justify-center w-full">
       <div className="flex flex-col justify-center w-full max-w-2xs md:max-w-4xl">
+        {/* Input Search */}
         <div className="relative w-full">
           <input
             type="text"
@@ -130,7 +131,7 @@ export default function Search() {
           />
           <div
             className="absolute inset-y-0 left-9 flex items-center cursor-pointer"
-            onClick={() => setShowFilter(!showFilter)}
+            onClick={() => setShowFilter(true)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -148,36 +149,74 @@ export default function Search() {
           </div>
         </div>
 
+        {/* Modal Filter */}
         {showFilter && (
-          <div className="mt-3 p-4 border border-yellow-500 rounded-xl bg-transparent">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-center text-lg font-medium">
+          <div
+            className="fixed inset-0 bg-white/10 backdrop-blur-sm flex justify-center items-center z-50"
+            onClick={(e) => {
+              // Klik di luar modal → tutup
+              if (e.target.classList.contains("bg-white/10")) {
+                setShowFilter(false);
+              }
+            }}
+          >
+            <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6 relative">
+              {/* Judul */}
+              <h2 className="text-center text-xl font-semibold mb-4">
                 Filter Pencarian
               </h2>
 
+              {/* Tombol Close */}
+              <button
+                onClick={() => setShowFilter(false)}
+                className="absolute top-3 right-4 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+
               {/* Harga Minimal */}
-              <input
-                type="number"
-                placeholder="Harga Minimal"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className="w-full rounded-lg border border-blue-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800 bg-white shadow-lg"
-              />
+              <div className="mb-3">
+                <label className="block text-sm font-medium">
+                  Harga Minimal
+                </label>
+                <div className="mt-2 flex items-center rounded-md bg-gray-100 pl-3 border border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500">
+                  <div className="shrink-0 text-base text-gray-600 select-none">
+                    Rp
+                  </div>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-gray-800 placeholder:text-gray-400 focus:outline-none sm:text-sm"
+                  />
+                </div>
+              </div>
 
               {/* Harga Maksimal */}
-              <input
-                type="number"
-                placeholder="Harga Maksimal"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="w-full rounded-lg border border-blue-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-800 bg-white shadow-lg"
-              />
+              <div className="mb-3">
+                <label className="block text-sm font-medium">
+                  Harga Maksimal
+                </label>
+                <div className="mt-2 flex items-center rounded-md bg-gray-100 pl-3 border border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500">
+                  <div className="shrink-0 text-base text-gray-600 select-none">
+                    Rp
+                  </div>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-gray-800 placeholder:text-gray-400 focus:outline-none sm:text-sm"
+                  />
+                </div>
+              </div>
 
               {/* Dropdown Provinsi */}
-              <div className="relative w-full">
+              <div className="relative mb-3">
                 <button
                   onClick={() => setIsOpenProvince(!isOpenProvince)}
-                  className="w-full flex justify-between text-black items-center rounded-lg border border-blue-500 bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+                  className="w-full flex justify-between text-black items-center rounded-lg border border-blue-500 bg-white px-4 py-2 text-left shadow focus:outline-none focus:ring-2 focus:ring-blue-800"
                 >
                   {selectedProvince}
                   <svg
@@ -221,11 +260,11 @@ export default function Search() {
               </div>
 
               {/* Dropdown Kota */}
-              <div className="relative w-full">
+              <div className="relative mb-3">
                 <button
                   onClick={() => setIsOpenCity(!isOpenCity)}
                   disabled={dataKota.length === 0}
-                  className="w-full flex justify-between text-black items-center rounded-lg border border-blue-500 bg-white px-4 py-2 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex justify-between text-black items-center rounded-lg border border-blue-500 bg-white px-4 py-2 text-left shadow focus:outline-none focus:ring-2 focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {selectedCity}
                   <svg
@@ -267,10 +306,37 @@ export default function Search() {
                 )}
               </div>
 
+              {/* 🔽 Filter Urutan ASC/DESC */}
+              <div className="mb-4">
+                <p className="text-gray-700 mb-2 font-medium">Urutkan Harga:</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSortOrder("asc")}
+                    className={`flex-1 py-2 rounded-lg border ${
+                      sortOrder === "asc"
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50"
+                    }`}
+                  >
+                    Termurah ⬆️
+                  </button>
+                  <button
+                    onClick={() => setSortOrder("desc")}
+                    className={`flex-1 py-2 rounded-lg border ${
+                      sortOrder === "desc"
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50"
+                    }`}
+                  >
+                    Termahal ⬇️
+                  </button>
+                </div>
+              </div>
+
               {/* Tombol Terapkan Filter */}
               <button
                 onClick={handleFilterSubmit}
-                className="w-full mt-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="w-full mt-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
               >
                 Terapkan Filter
               </button>
