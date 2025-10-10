@@ -14,12 +14,11 @@ export default function Search() {
   const [isOpenProvince, setIsOpenProvince] = useState(false);
   const [isOpenCity, setIsOpenCity] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [sortOrder, setSortOrder] = useState("asc"); 
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Ambil query params dari URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setKeyword(queryParams.get("search") || "");
@@ -82,6 +81,7 @@ export default function Search() {
       filterParams.append("province", selectedProvince);
     if (selectedCity && selectedCity !== "Kota")
       filterParams.append("city", selectedCity);
+    if (sortOrder) filterParams.append("sort_order", sortOrder);
     return filterParams.toString();
   };
 
@@ -89,16 +89,16 @@ export default function Search() {
     if (e.key === "Enter") {
       e.preventDefault();
 
-      if (
-        !keyword.trim() &&
-        !minPrice &&
-        !maxPrice &&
-        selectedProvince === "Provinsi" &&
-        selectedCity === "Kota"
-      ) {
-        alert("Isi minimal satu filter atau kata kunci untuk mencari!");
-        return;
-      }
+      // if (
+      //   !keyword.trim() &&
+      //   !minPrice &&
+      //   !maxPrice &&
+      //   selectedProvince === "Provinsi" &&
+      //   selectedCity === "Kota"
+      // ) {
+      //   alert("Isi minimal satu filter atau kata kunci untuk mencari!");
+      //   return;
+      // }
 
       const queryString = buildQueryParams();
       navigate(`/beli?${queryString}`);
@@ -114,6 +114,18 @@ export default function Search() {
       navigate(`/beli?${queryString}`);
     }
     setShowFilter(false); // Tutup modal setelah klik "Terapkan Filter"
+  };
+
+  const formatRupiah = (value) => {
+    if (!value) return "";
+    const numberString = value.toString().replace(/\D/g, ""); 
+    const number = parseInt(numberString, 10);
+    if (isNaN(number)) return "";
+    return new Intl.NumberFormat("id-ID").format(number);
+  };
+
+  const unformatRupiah = (value) => {
+    return value.replace(/\D/g, "");
   };
 
   return (
@@ -161,12 +173,9 @@ export default function Search() {
             }}
           >
             <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6 relative">
-              {/* Judul */}
               <h2 className="text-center text-xl font-semibold mb-4">
                 Filter Pencarian
               </h2>
-
-              {/* Tombol Close */}
               <button
                 onClick={() => setShowFilter(false)}
                 className="absolute top-3 right-4 text-gray-500 hover:text-gray-700"
@@ -180,14 +189,15 @@ export default function Search() {
                   Harga Minimal
                 </label>
                 <div className="mt-2 flex items-center rounded-md bg-gray-100 pl-3 border border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500">
-                  <div className="shrink-0 text-base text-gray-600 select-none">
-                    Rp
-                  </div>
+                  <div className="shrink-0 text-base text-gray-600 select-none"></div>
                   <input
-                    type="number"
+                    type="text"
                     placeholder="0"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
+                    value={minPrice ? `Rp ${formatRupiah(minPrice)}` : ""}
+                    onChange={(e) => {
+                      const rawValue = unformatRupiah(e.target.value);
+                      setMinPrice(rawValue);
+                    }}
                     className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-gray-800 placeholder:text-gray-400 focus:outline-none sm:text-sm"
                   />
                 </div>
@@ -199,14 +209,15 @@ export default function Search() {
                   Harga Maksimal
                 </label>
                 <div className="mt-2 flex items-center rounded-md bg-gray-100 pl-3 border border-gray-300 focus-within:ring-2 focus-within:ring-indigo-500">
-                  <div className="shrink-0 text-base text-gray-600 select-none">
-                    Rp
-                  </div>
+                  <div className="shrink-0 text-base text-gray-600 select-none"></div>
                   <input
-                    type="number"
+                    type="text"
                     placeholder="0"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
+                    value={maxPrice ? `Rp ${formatRupiah(maxPrice)}` : ""}
+                    onChange={(e) => {
+                      const rawValue = unformatRupiah(e.target.value);
+                      setMaxPrice(rawValue);
+                    }}
                     className="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-gray-800 placeholder:text-gray-400 focus:outline-none sm:text-sm"
                   />
                 </div>
@@ -306,7 +317,6 @@ export default function Search() {
                 )}
               </div>
 
-              {/* 🔽 Filter Urutan ASC/DESC */}
               <div className="mb-4">
                 <p className="text-gray-700 mb-2 font-medium">Urutkan Harga:</p>
                 <div className="flex gap-2">

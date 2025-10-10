@@ -25,6 +25,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^7.9.1",
     "swiper": "^12.0.1",
+    "framer-motion": "^12.23.22",
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {
