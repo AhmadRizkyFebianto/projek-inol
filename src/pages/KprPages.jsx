@@ -14,7 +14,6 @@ export default function KprPage() {
   const [loading, setLoading] = useState(true);
   const [itemsPerPage, setItemsPerPage] = useState(9);
   const [hasilSimulasi, setHasilSimulasi] = useState(null);
-  console.log("Hasil Simulasi State:", hasilSimulasi);
   const [loadingSimulasi, setLoadingSimulasi] = useState(false);
 
   const navigate = useNavigate();
@@ -23,6 +22,8 @@ export default function KprPage() {
   };
   const endPoint =
     "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?";
+  const endPointFilter =
+    "https://smataco.my.id/dev/unez/CariRumahAja/routes/contribution.php?";
   const endpointImage =
     "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
@@ -57,9 +58,9 @@ export default function KprPage() {
     };
     try {
       setLoading(true);
-      const res = await axios.get(endPoint, { params });
+      const res = await axios.get(endPointFilter, { params });
       console.log("Hasil KPR:", res.data);
-      setHasilKPR(res.data);
+      setDataRumah(res.data);
     } catch (err) {
       console.error("Gagal hitung KPR:", err);
       alert("Terjadi kesalahan saat menghitung KPR!");
@@ -77,9 +78,10 @@ export default function KprPage() {
     };
     try {
       setLoadingSimulasi(true);
-      const res = await axios.get(endPoint, { params });
+      const res = await axios.get(endPointFilter, { params });
       setHasilSimulasi(res.data.simulasi);
-      console.log("Hasil Simulasi:", res.data.simulasi);
+      console.log("Hasil Simulasi:", res.data.rekomendasi);
+      setDataRumah(res.data.rekomendasi);
     } catch (err) {
       console.error("Gagal simulasi:", err);
       alert("Gagal menghitung simulasi KPR");
@@ -216,7 +218,7 @@ export default function KprPage() {
                           Rp{" "}
                           {item.property_price
                             ? new Intl.NumberFormat("id-ID").format(
-                                item.property_price.slice(0, -2)
+                                item.property_price
                               )
                             : "N/A"}
                         </span>
