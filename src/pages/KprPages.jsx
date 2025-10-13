@@ -13,6 +13,9 @@ export default function KprPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage, setItemsPerPage] = useState(9);
+  const [hasilSimulasi, setHasilSimulasi] = useState(null);
+  console.log("Hasil Simulasi State:", hasilSimulasi);
+  const [loadingSimulasi, setLoadingSimulasi] = useState(false);
 
   const navigate = useNavigate();
   const handledetail = (ref_id) => {
@@ -65,6 +68,26 @@ export default function KprPage() {
     }
   };
 
+  const handleSubmitSimulasi = async ({ dp, tenor, gaji }) => {
+    const params = {
+      mode: "simulasi_kemampuan",
+      dp,
+      tenor,
+      gaji,
+    };
+    try {
+      setLoadingSimulasi(true);
+      const res = await axios.get(endPoint, { params });
+      setHasilSimulasi(res.data.simulasi);
+      console.log("Hasil Simulasi:", res.data.simulasi);
+    } catch (err) {
+      console.error("Gagal simulasi:", err);
+      alert("Gagal menghitung simulasi KPR");
+    } finally {
+      setLoadingSimulasi(false);
+    }
+  };
+
   const totalPages = Math.ceil(dataRumah.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -90,9 +113,42 @@ export default function KprPage() {
       <Navbar />
 
       <div className="flex flex-1">
-        <Sidebar onHitungKPR={handleHitungKPR} />
+        <Sidebar
+          onHitungKPR={handleHitungKPR}
+          onSimulasiKPR={handleSubmitSimulasi}
+          loadingSimulasi={loadingSimulasi}
+        />
 
         <main className="flex-1 p-6 bg-white">
+          <div className="gap-3 flex flex-wrap justify-center mb-10">
+            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+              Gaji Bulanan:
+              <span className="font-semibold ml-2">
+                {hasilSimulasi ? hasilSimulasi.gaji_bulanan : "0"}
+              </span>
+            </a>
+
+            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+              Maks Cicilan:
+              <span className="font-semibold ml-2">
+                {hasilSimulasi ? hasilSimulasi.maks_cicilan : "0"}
+              </span>
+            </a>
+
+            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+              Estimasi Harga Rumah:
+              <span className="font-semibold ml-2">
+                {hasilSimulasi ? hasilSimulasi.estimasi_harga_rumah : "0"}
+              </span>
+            </a>
+
+            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+              DP Nominal:
+              <span className="font-semibold ml-2">
+                {hasilSimulasi ? hasilSimulasi.dp_nominal : "0"}
+              </span>
+            </a>
+          </div>
           {/* Loading shimmer */}
           {loading ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
