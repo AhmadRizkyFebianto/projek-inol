@@ -9,17 +9,17 @@ import { useNavigate } from "react-router-dom";
 
 export default function KprPage() {
   const [dataRumah, setDataRumah] = useState([]);
+  const [hasilKPR, setHasilKPR] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
-
   const navigate = useNavigate();
   const handledetail = (ref_id) => {
-    navigate('/detailrumah/' + ref_id)
-  }
+    navigate("/detailrumah/" + ref_id);
+  };
   const endPoint =
-    "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?mode=latest";
+    "https://smataco.my.id/dev/unez/CariRumahAja/api/contribution.php?";
   const endpointImage =
     "https://smataco.my.id/dev/unez/CariRumahAja/foto/rumah.jpg";
 
@@ -46,6 +46,25 @@ export default function KprPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const handleHitungKPR = async ({ dp, tenor }) => {
+    const params = {
+      mode: "hitung_kpr",
+      dp,
+      tenor,
+    };
+    try {
+      setLoading(true);
+      const res = await axios.get(endPoint, { params });
+      console.log("Hasil KPR:", res.data);
+      setHasilKPR(res.data);
+    } catch (err) {
+      console.error("Gagal hitung KPR:", err);
+      alert("Terjadi kesalahan saat menghitung KPR!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const totalPages = Math.ceil(dataRumah.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -71,7 +90,7 @@ export default function KprPage() {
       <Navbar />
 
       <div className="flex flex-1">
-        <Sidebar />
+        <Sidebar onHitungKPR={handleHitungKPR} />
 
         <main className="flex-1 p-6 bg-white">
           {/* Loading shimmer */}
@@ -84,14 +103,15 @@ export default function KprPage() {
           ) : currentData.length === 0 ? (
             <div className="text-center text-gray-500">Tidak ada data</div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 overflow-y-auto"
-              style={{ maxHeight: "calc(105vh - 200px)" }}>
+            <div
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 overflow-y-auto"
+              style={{ maxHeight: "calc(105vh - 200px)" }}
+            >
               {currentData.map((item, i) => (
                 <div
                   key={i}
                   className="w-full overflow-hidden bg-white rounded-lg shadow-md shadow-black/30"
-                  
-                  onClick={() => handledetail (item.ref_id)}
+                  onClick={() => handledetail(item.ref_id)}
                 >
                   <div className="rounded-xl overflow-hidden relative">
                     {/* Image */}
@@ -106,7 +126,7 @@ export default function KprPage() {
                         className="object-cover w-full h-full"
                         loading="lazy"
                       />
-                      
+
                       {/* <img
                           // src={endpointImage + item.image}
                           src={endpointImage}

@@ -118,7 +118,7 @@ export default function Search() {
 
   const formatRupiah = (value) => {
     if (!value) return "";
-    const numberString = value.toString().replace(/\D/g, ""); 
+    const numberString = value.toString().replace(/\D/g, "");
     const number = parseInt(numberString, 10);
     if (isNaN(number)) return "";
     return new Intl.NumberFormat("id-ID").format(number);
@@ -317,7 +317,7 @@ export default function Search() {
                 )}
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <p className="text-gray-700 mb-2 font-medium">Urutkan Harga:</p>
                 <div className="flex gap-2">
                   <button
@@ -341,7 +341,7 @@ export default function Search() {
                     Termahal ⬇️
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               {/* Tombol Terapkan Filter */}
               <button

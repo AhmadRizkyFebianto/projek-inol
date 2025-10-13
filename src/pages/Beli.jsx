@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import Search from "../Components/Elements/Search";
 import Footer from "../Components/Elements/Footer";
@@ -83,15 +83,11 @@ export default function Beli() {
   const navigate = useNavigate();
   const location = useLocation();
   const [summaryData, setSummaryData] = useState({});
-
-
-  console.log(dataRumah);
-
   const [sortOrder, setSortOrder] = useState("asc");
 
   const handleDetail = (ref_id) => navigate("/detailrumah/" + ref_id);
 
-  // === FETCH DATA DARI API_FILTER (tanpa atau dengan parameter filter) ===
+  // ✅ FETCH DATA - hanya saat filter berubah (BUKAN saat sort berubah)
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const params = {
@@ -102,7 +98,10 @@ export default function Beli() {
       search: queryParams.get("search") || "",
     };
 
-    const sortParam = queryParams.get("sort_order") || sortOrder;
+    // Ambil sort order dari URL untuk sinkronisasi state
+    const urlSortOrder = queryParams.get("sort_order") || "asc";
+    setSortOrder(urlSortOrder);
+
     setLoading(true);
 
     axios
@@ -113,30 +112,23 @@ export default function Beli() {
         maxHarga: params.maxHarga,
         mode: "filter_properti",
         search: params.search,
-        sort_order: sortParam,
+        // ❌ TIDAK kirim sort_order ke backend
       })
       .then((res) => {
         let data = [];
 
-        // ✅ ambil dari res.data.properties
         if (res.data && Array.isArray(res.data.properties)) {
           data = res.data.properties;
         } else if (Array.isArray(res.data)) {
           data = res.data;
         }
 
-        // ✅ simpan summary (Apartemen, Ruko/Rukan, Tanah & Bangunan)
+        // Simpan summary
         if (res.data && res.data.summary) {
           setSummaryData(res.data.summary);
         }
 
-        // ✅ urutkan sesuai sort order
-        if (sortParam === "asc") {
-          data.sort((a, b) => a.property_price - b.property_price);
-        } else if (sortParam === "desc") {
-          data.sort((a, b) => b.property_price - a.property_price);
-        }
-
+        // ❌ HAPUS sorting di sini - biar di client side aja
         setDataRumah(data);
       })
       .catch((err) => {
@@ -144,13 +136,33 @@ export default function Beli() {
         setDataRumah([]);
       })
       .finally(() => setLoading(false));
-  }, [location.search, sortOrder]);
+  }, [
+    // ✅ Dependency yang TIDAK termasuk sort_order
+    new URLSearchParams(location.search).get("minHarga"),
+    new URLSearchParams(location.search).get("maxHarga"),
+    new URLSearchParams(location.search).get("province"),
+    new URLSearchParams(location.search).get("city"),
+    new URLSearchParams(location.search).get("search"),
+  ]);
 
-  // Pagination
-  const totalPages = Math.ceil(dataRumah.length / itemsPerPage);
+  // ✅ SORTING CLIENT-SIDE menggunakan useMemo
+  const sortedData = useMemo(() => {
+    const data = [...dataRumah]; // copy array agar tidak mutasi original
+
+    if (sortOrder === "asc") {
+      return data.sort((a, b) => a.property_price - b.property_price);
+    } else if (sortOrder === "desc") {
+      return data.sort((a, b) => b.property_price - a.property_price);
+    }
+
+    return data;
+  }, [dataRumah, sortOrder]);
+
+  // ✅ Pagination menggunakan sortedData (bukan dataRumah)
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentData = dataRumah.slice(indexOfFirst, indexOfLast);
+  const currentData = sortedData.slice(indexOfFirst, indexOfLast);
 
   const renderPaginationButtons = () =>
     Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -187,43 +199,50 @@ export default function Beli() {
         );
       });
 
+  // ✅ Handle Sort - TANPA fetching ulang
+  const handleSortToggle = () => {
+    const newOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+
+    // Update URL
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("sort_order", newOrder);
+    navigate(`?${queryParams.toString()}`, { replace: true });
+
+    // Reset ke halaman pertama
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex justify-center mt-10">
         <Search />
       </div>
-
       <div className="flex justify-between items-center px-10 mt-6">
         <div className="w-52 h-5 md:block hidden"></div>
-          <div className="gap-3 flex flex-wrap justify-center">
-            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
-              Tanah & Bangunan{" "}
-              <span className="font-semibold">
-                {summaryData["Tanah & Bangunan"] ?? 0}
-              </span>
-            </a>
-            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
-              Apartemen{" "}
-              <span className="font-semibold">
-                {summaryData["Apartemen"] ?? 0}
-              </span>
-            </a>
-            <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
-              Ruko{" "}
-              <span className="font-semibold">
-                {summaryData["Ruko/Rukan"] ?? 0}
-              </span>
-            </a>
-          </div>
+        <div className="gap-3 flex flex-wrap justify-center">
+          <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+            Tanah & Bangunan{" "}
+            <span className="font-semibold">
+              {summaryData["Tanah & Bangunan"] ?? 0}
+            </span>
+          </a>
+          <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+            Apartemen{" "}
+            <span className="font-semibold">
+              {summaryData["Apartemen"] ?? 0}
+            </span>
+          </a>
+          <a className="bg-white border-2 border-gray-600/50 text-black px-5 py-1 rounded-full">
+            Ruko{" "}
+            <span className="font-semibold">
+              {summaryData["Ruko/Rukan"] ?? 0}
+            </span>
+          </a>
+        </div>
         <button
-          onClick={() => {
-            const newOrder = sortOrder === "asc" ? "desc" : "asc";
-            setSortOrder(newOrder);
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.set("sort_order", newOrder);
-            navigate(`?${queryParams.toString()}`);
-          }}
+          onClick={handleSortToggle}
           className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md shadow-sm hover:bg-gray-100 transition-all duration-200"
         >
           {sortOrder === "asc" ? (
