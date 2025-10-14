@@ -122,7 +122,7 @@ export default function Navbar() {
                 to="/kpr"
                 className={`hover:text-gray-500 ${isActive("/kpr")}`}
               >
-                Hitung KPR
+                Simulasi KPR
               </Link>
             </li>
 
@@ -232,7 +232,7 @@ export default function Navbar() {
             Jual Rumah
           </Link>
           <Link to="/kpr" className={`hover:text-gray-900 ${isActive("/kpr")}`}>
-            Hitung KPR
+            Simulasi KPR
           </Link>
 
           {/* ✅ Mobile juga cek login */}

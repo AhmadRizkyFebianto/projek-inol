@@ -38,7 +38,7 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
     }
 
     if (typeof onSimulasiKPR === "function") {
-      onSimulasiKPR({ dp, tenor, gaji, mode: "simulasi_kemampuan" });
+      onSimulasiKPR({ dp, tenor, gaji, mode: "simulasi_kpr" });
       setShowFormSimulasi(false);
     } else {
       console.warn(
@@ -68,7 +68,7 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
         </p>
         <div className="flex flex-col items-center justify-center h-full w-full gap-y-5">
           {/* /* Bagian atas (Hitung KPR) */}
-          <div className="flex flex-col items-center w-full">
+          {/* <div className="flex flex-col items-center w-full">
             <button
               onClick={() => {
                 setShowFormHitung(!showFormHitung);
@@ -136,7 +136,7 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
                 </form>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Bagian bawah (Simulasi KPR) */}
           <div className="flex flex-col items-center w-full">
@@ -176,7 +176,7 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
                   </div>
 
                   {/* Cicilan Aktif */}
-                  <div>
+                  {/* <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
                       Cicilan Bulanan Aktif
                     </label>
@@ -192,7 +192,7 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
                       }}
                       className="w-full px-3 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
-                  </div>
+                  </div> */}
 
                   {/* Kesanggupan Uang Muka */}
                   <div>
@@ -207,6 +207,34 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
                         setDp(rawValue);
                       }}
                       className="w-full px-3 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                      Tenor Angsuran
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={tenor}
+                        onChange={(e) => {
+                          setTenor(e.target.value);
+                        }}
+                        className="flex-1 px-3 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className=" text-gray-700 text-sm">Tahun</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                      Bank dan Program KPR
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Refrensi Bank BRI : 2.99%"
+                      className="w-full px-3 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      readOnly
+                      disabled
                     />
                   </div>
 
