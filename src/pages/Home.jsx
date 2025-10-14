@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import axios from "axios"; //pake axios aja ya dik :)
+import axios from "axios";
 import "keen-slider/keen-slider.min.css";
 import KeenSlider from "keen-slider";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -19,11 +19,17 @@ import Footer from "../Components/Elements/Footer";
 import Frame1 from "../assets/frame1.png";
 import Frame2 from "../assets/frame2.png";
 import Frame3 from "../assets/frame3.png";
-import Chatbotimg from "../assets/ChatBot.png"
-import Kprimg from "../assets/HitungKpr.png"
+import Chatbotimg from "../assets/ChatBot.png";
+import Kprimg from "../assets/HitungKpr.png";
 import { Pointer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Suspense } from "react";
+
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 const FrameData = [
   { id: 1, url: Frame1, duration: 5, alt: "Frame 1" },
@@ -61,6 +67,34 @@ export default function Home() {
     navigate("/detailrumah/" + ref_id);
   };
 
+  const imgRefDesktop = useRef(null);
+  const imgRefMobile = useRef(null);
+
+  const handleRotateDesktop = () => {
+    if (imgRefDesktop.current) {
+      gsap.to(imgRefDesktop.current, {
+        rotation: "+=360",
+        duration: 1,
+        ease: "power2.out",
+      });
+    }
+  };
+
+  const handleRotateMobile = () => {
+    if (imgRefMobile.current) {
+      gsap.to(imgRefMobile.current, {
+        rotation: "+=360",
+        duration: 1,
+        ease: "power2.out",
+      });
+    }
+  };
+
+  function Model({ scale = 1 }) {
+    const { scene } = useGLTF("models/chatbot.glb");
+    return <primitive object={scene} scale={scale} />;
+  }
+
   const GetData = async (lat, lng) => {
     await fetch(
       ApiContribution + "?latitude=" + lat + "&longitude=" + lng + "&page=1"
@@ -69,7 +103,6 @@ export default function Home() {
       .then((response) => {
         console.log(response);
         setrumahTerdekat(response);
-        // console.log(rumahTerdekat.length);
       });
   };
   const textLocation = async () => {
@@ -210,7 +243,7 @@ export default function Home() {
             </div>
             <div>
               <a
-                href=""
+                href="/beli"
                 className="bg-yellow-200 px-5 py-1.5 rounded-lg shadow-md"
               >
                 Lihat Semua
@@ -296,11 +329,18 @@ export default function Home() {
 
         <div className="mt-30 mx-10 md:block hidden">
           <div className="flex justify-center xl:gap-14 lg:gap-8 md:gap-2 gap-2">
-            <div>
-              <img className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl" 
-                src={Chatbotimg}
-                alt="ChatbotImg"
-              />
+            <div className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl overflow-hidden bg-gray-100">
+              <Canvas
+                style={{ width: "100%", height: "100%" }}
+                camera={{ position: [0, 0, 3], fov: 40 }}
+              >
+                <ambientLight intensity={0.6} />
+                <directionalLight position={[10, 10, 5]} intensity={1} />
+                <Suspense>
+                  <Model scale={0.8} />
+                </Suspense>
+                <OrbitControls enableZoom={false} enablePan={false} />
+              </Canvas>
             </div>
             <div className="flex justify-center items-center text-center">
               <div className="xl:space-y-20 space-y-8">
@@ -334,11 +374,19 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <img className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl" 
+              <img
+                ref={imgRefDesktop}
+                className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl cursor-pointer"
                 src={Kprimg}
-                alt="KPRimg"
+                alt="KprImg"
+                onClick={handleRotateDesktop}
+                style={{
+                  transformOrigin: "center",
+                  transition: "transform 0.3s ease",
+                }}
               />
             </div>
+            {/* className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl" */}
           </div>
         </div>
 
@@ -346,10 +394,17 @@ export default function Home() {
         <div className="md:hidden block mx-5">
           <div className="keen-slider my-10" ref={sliderFiturRef}>
             <div className="keen-slider__slide flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-5 rounded-2xl shadow-lg">
-              <img className=" w-[50%] rounded-2xl" 
-                src={Chatbotimg}
-                alt="ChatBotImg"
-              />
+              <Canvas
+                style={{ width: "100%", height: "100%" }}
+                camera={{ position: [0, 0, 3], fov: 30 }}
+              >
+                <ambientLight intensity={0.6} />
+                <directionalLight position={[10, 10, 5]} intensity={1} />
+                <Suspense>
+                  <Model scale={0.8} />
+                </Suspense>
+                <OrbitControls enableZoom={false} enablePan={false} />
+              </Canvas>
               <div className="flex justify-center items-center text-center w-full md:w-auto">
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
@@ -365,9 +420,12 @@ export default function Home() {
               </div>
             </div>
             <div className="keen-slider__slide flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-5 rounded-2xl shadow-lg">
-              <img className="w-[50%] rounded-2xl" 
+              <img
+                ref={imgRefMobile}
+                className="w-[50%] rounded-2xl cursor-pointer"
                 src={Kprimg}
                 alt="KprImg"
+                onClick={handleRotateMobile}
               />
               <div className="flex justify-center items-center text-center w-full md:w-auto">
                 <div className="space-y-5 mb-2">
