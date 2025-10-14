@@ -27,6 +27,8 @@ import { Link } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
+import introJs from "intro.js";
+import "intro.js/introjs.css";
 
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -55,6 +57,7 @@ export default function Home() {
   const [nama_lengkap, setNama_lengkap] = useState("");
   const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
   const navigate = useNavigate();
+  const hasRunTour = useRef(false);
 
   let ApiContribution =
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/contribution.php?mode=nearby&latitude=-6.208763&longitude=106.845599";
@@ -192,15 +195,84 @@ export default function Home() {
     return () => newSliderFitur.destroy();
   }, []);
 
+useEffect(() => {
+  const hasSeenIntro = localStorage.getItem("hasSeenIntro");
+  if (hasSeenIntro) return;
+
+  const timer = setTimeout(() => {
+    const home = document.querySelector("#home");
+    const iklan = document.querySelector("#iklan");
+    const rumah_terdekat = document.querySelector("#rumah_terdekat");
+    const chatbot = document.querySelector("#chatbot");
+    const hitung_kpr = document.querySelector("#hitung_kpr");
+
+    if (
+      home &&
+      iklan &&
+      rumah_terdekat &&
+      chatbot &&
+      hitung_kpr &&
+      !hasRunTour.current
+    ) {
+      const intro = introJs();
+      intro.setOptions({
+        disableInteraction: true,
+        steps: [
+          {
+            element: "#home",
+            intro: "👋 Halo! Selamat datang di halaman utama.",
+          },
+          {
+            element: "#iklan",
+            intro: "🖼️ Ini adalah bagian iklan kami.",
+          },
+          {
+            element: "#rumah_terdekat",
+            intro: "🏠 Ini daftar rumah terdekat dengan lokasimu.",
+          },
+          {
+            element: "#chatbot",
+            intro: "🏠 Ini chatbot",
+            position: "bottom"
+          },
+          {
+            element: "#hitung_kpr",
+            intro: "🏠 Ini hitung-kpr",
+          },
+        ],
+        showProgress: false,
+        showBullets: true,
+        nextLabel: "Lanjut →",
+        prevLabel: "← Kembali",
+        doneLabel: "Selesai",
+      });
+
+      intro.start();
+      hasRunTour.current = true;
+
+      intro.oncomplete(() => {
+        localStorage.setItem("hasSeenIntro", "true");
+      });
+
+      intro.onexit(() => {
+        localStorage.setItem("hasSeenIntro", "true");
+      });
+    }
+  }, 1000);
+
+  return () => clearTimeout(timer);
+}, []);
+
+
   console.log(rumahTerdekat.error);
   return (
     <>
       <Navbar />
-      <div>
+      <div id="home">
         {/* iklan */}
         <div className="relative my-10">
           <Search />
-          <div className="keen-slider mt-8" ref={sliderRef}>
+          <div id="iklan" className="keen-slider mt-8" ref={sliderRef}>
             {FrameData.map((frame) => (
               <div key={frame.id} className="keen-slider__slide">
                 <img
@@ -225,7 +297,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="mt-30 mx-10">
+        <div id="rumah_terdekat" className="mt-30 mx-10">
           <div className="flex justify-between items-center">
             <div className="w-1 h-1 md:block hidden" />
             <div className="">
@@ -327,7 +399,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-30 mx-10 md:block hidden">
+        <div id="chatbot" className="mt-30 mx-10 md:block hidden">
           <div className="flex justify-center xl:gap-14 lg:gap-8 md:gap-2 gap-2">
             <div className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl overflow-hidden bg-gray-100">
               <Canvas
@@ -358,7 +430,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="my-30 mx-10 md:block hidden">
+        <div id="hitung_kpr" className="my-30 mx-10 md:block hidden">
           <div className="flex justify-center xl:gap-14 lg:gap-8 md:gap-2 gap-2">
             <div className="flex justify-center items-center text-center">
               <div className="xl:space-y-20 space-y-8">
@@ -405,7 +477,7 @@ export default function Home() {
                 </Suspense>
                 <OrbitControls enableZoom={false} enablePan={false} />
               </Canvas>
-              <div className="flex justify-center items-center text-center w-full md:w-auto">
+              <div id="chatbot" className="flex justify-center items-center text-center w-full md:w-auto">
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
                     Mau cari rekomendasi rumah yang cepat sesuai konsepmu?
@@ -427,7 +499,7 @@ export default function Home() {
                 alt="KprImg"
                 onClick={handleRotateMobile}
               />
-              <div className="flex justify-center items-center text-center w-full md:w-auto">
+              <div id="hitung_kpr" className="flex justify-center items-center text-center w-full md:w-auto">
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
                     Mau hitung KPR rumah yang cepat dan sesuai?
