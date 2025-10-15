@@ -278,7 +278,7 @@ useEffect(() => {
                 <img
                   src={frame.url}
                   alt={frame.alt}
-                  className="w-full h-[500px] object-cover"
+                  className="w-full h-auto max-h-[80vh] object-contain"
                 />
               </div>
             ))}
@@ -477,7 +477,10 @@ useEffect(() => {
                 </Suspense>
                 <OrbitControls enableZoom={false} enablePan={false} />
               </Canvas>
-              <div id="chatbot" className="flex justify-center items-center text-center w-full md:w-auto">
+              <div
+                id="chatbot"
+                className="flex justify-center items-center text-center w-full md:w-auto"
+              >
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
                     Mau cari rekomendasi rumah yang cepat sesuai konsepmu?
@@ -499,7 +502,10 @@ useEffect(() => {
                 alt="KprImg"
                 onClick={handleRotateMobile}
               />
-              <div id="hitung_kpr" className="flex justify-center items-center text-center w-full md:w-auto">
+              <div
+                id="hitung_kpr"
+                className="flex justify-center items-center text-center w-full md:w-auto"
+              >
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
                     Mau hitung KPR rumah yang cepat dan sesuai?
