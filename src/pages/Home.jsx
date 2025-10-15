@@ -207,14 +207,21 @@ export default function Home() {
           element: "#home",
           intro: "👋 Halo! Selamat datang di halaman utama.",
         },
-        { element: "#iklan", intro: "🖼️ Ini bagian iklan utama kami." },
-        { element: "#rumah_terdekat", intro: "🏠 Ini daftar rumah terdekat." },
+        { element: "#iklan", 
+          intro: "🖼️ Ini bagian iklan utama kami." 
+        },
+
+        { element: "#rumah_terdekat", 
+          intro: "🏠 Ini daftar rumah terdekat." },
         {
           element: "#chatbot",
           intro: "🤖 Ini chatbot yang siap membantu kamu.",
           position: "bottom",
         },
-        { element: "#hitung_kpr", intro: "💰 Ini fitur kalkulator KPR." },
+        { 
+          element: "#hitung_kpr", 
+          intro: "💰 Ini fitur kalkulator KPR." 
+        },
       ];
 
       const mobileStepsCandidates = [
@@ -222,16 +229,13 @@ export default function Home() {
           element: "#home",
           intro: "👋 Halo! Selamat datang di halaman utama.",
         },
-        { element: "#iklan", intro: "🖼️ Ini bagian iklan utama kami." },
-        { element: "#rumah_terdekat", intro: "🏠 Ini daftar rumah terdekat." },
-        {
-          element: "#responsive_chatbot",
-          intro: "🤖 Ini chatbot (mobile).",
-          position: "bottom",
+        { 
+          element: "#iklan", 
+          intro: "🖼️ Ini bagian iklan utama kami." 
         },
-        {
-          element: "#responsive_hitung_kpr",
-          intro: "💰 Ini fitur kalkulator KPR (mobile).",
+        { 
+          element: "#rumah_terdekat", 
+          intro: "🏠 Ini daftar rumah terdekat." 
         },
       ];
 
