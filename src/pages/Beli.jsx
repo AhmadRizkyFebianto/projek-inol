@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import axios from "axios";
 import Search from "../Components/Elements/Search";
 import Footer from "../Components/Elements/Footer";
@@ -6,6 +6,8 @@ import Navbar from "../Components/Elements/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowDownAZ, ArrowUpZA } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import introJs from "intro.js";
+import "intro.js/minified/introjs.min.css";
 
 const API_FILTER =
   "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=filter_properti";
@@ -86,6 +88,88 @@ export default function Beli() {
   const [sortOrder, setSortOrder] = useState("asc");
 
   const handleDetail = (ref_id) => navigate("/detailrumah/" + ref_id);
+
+  const hasRunIntro = useRef(false);
+
+  useEffect(() => {
+    // Cegah ulang intro
+    if (hasRunIntro.current) return;
+
+    const hasSeenIntro = localStorage.getItem("hasSeenIntroBeli");
+    if (hasSeenIntro) return;
+
+    const startIntro = () => {
+      const isMobile = window.innerWidth < 768;
+
+      const steps = [
+        {
+          element: "#intro-search",
+          intro: "🔍 Gunakan kolom ini untuk mencari rumah sesuai kebutuhanmu.",
+          position: "bottom",
+        },
+        {
+          element: "#intro-sort",
+          intro: "📊 Gunakan tombol ini untuk mengurutkan hasil pencarian.",
+          position: isMobile ? "bottom" : "left",
+        },
+        {
+          element: "#intro-property",
+          intro:
+            "🏡 Hasil properti tampil di sini. Tap salah satu untuk melihat detail rumah.",
+          position: "top",
+        },
+      ];
+
+      // Filter step yang elemen-nya muncul
+      const visibleSteps = steps.filter((s) =>
+        document.querySelector(s.element)
+      );
+
+      if (visibleSteps.length === 0) return;
+
+      const intro = introJs();
+      intro.setOptions({
+        steps: visibleSteps,
+        disableInteraction: false,
+        showProgress: true,
+        showBullets: true,
+        nextLabel: "Lanjut →",
+        prevLabel: "← Kembali",
+        doneLabel: "Selesai",
+        exitOnOverlayClick: false,
+        exitOnEsc: false,
+        scrollToElement: true,
+      });
+
+      intro.onchange((el) => {
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+
+      intro.oncomplete(() => {
+        localStorage.setItem("hasSeenIntroBeli", "true");
+      });
+
+      intro.onexit(() => {
+        localStorage.setItem("hasSeenIntroBeli", "true");
+      });
+
+      intro.start();
+      hasRunIntro.current = true;
+    };
+
+    // Jalankan setelah layout dan animasi muncul
+    const delayIntro = setTimeout(() => {
+      if (document.readyState === "complete") startIntro();
+      else window.addEventListener("load", startIntro);
+    }, 1500);
+
+    return () => {
+      clearTimeout(delayIntro);
+      window.removeEventListener("load", startIntro);
+    };
+  }, [loading]);
 
   // ✅ FETCH DATA - hanya saat filter berubah (BUKAN saat sort berubah)
   useEffect(() => {
@@ -216,7 +300,7 @@ export default function Beli() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center mt-10" id="intro-search">
         <Search />
       </div>
       <div className="flex justify-between items-center px-10 mt-6">
@@ -242,6 +326,7 @@ export default function Beli() {
           </a>
         </div>
         <button
+          id="intro-sort"
           onClick={handleSortToggle}
           className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md shadow-sm hover:bg-gray-100 transition-all duration-200"
         >
@@ -279,6 +364,7 @@ export default function Beli() {
             <AnimatePresence>
               <motion.div
                 layout
+                id="intro-property"
                 className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto"
                 style={{ maxHeight: "calc(105vh - 200px)" }}
               >

@@ -195,74 +195,105 @@ export default function Home() {
     return () => newSliderFitur.destroy();
   }, []);
 
-useEffect(() => {
-  const hasSeenIntro = localStorage.getItem("hasSeenIntro");
-  if (hasSeenIntro) return;
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem("hasSeenIntro");
+    if (hasSeenIntro) return;
 
-  const timer = setTimeout(() => {
-    const home = document.querySelector("#home");
-    const iklan = document.querySelector("#iklan");
-    const rumah_terdekat = document.querySelector("#rumah_terdekat");
-    const chatbot = document.querySelector("#chatbot");
-    const hitung_kpr = document.querySelector("#hitung_kpr");
+    const timer = setTimeout(() => {
+      const isMobile = window.innerWidth < 768;
 
-    if (
-      home &&
-      iklan &&
-      rumah_terdekat &&
-      chatbot &&
-      hitung_kpr &&
-      !hasRunTour.current
-    ) {
-      const intro = introJs();
-      intro.setOptions({
-        disableInteraction: true,
-        steps: [
-          {
-            element: "#home",
-            intro: "👋 Halo! Selamat datang di halaman utama.",
-          },
-          {
-            element: "#iklan",
-            intro: "🖼️ Ini adalah bagian iklan kami.",
-          },
-          {
-            element: "#rumah_terdekat",
-            intro: "🏠 Ini daftar rumah terdekat dengan lokasimu.",
-          },
-          {
-            element: "#chatbot",
-            intro: "🏠 Ini chatbot",
-            position: "bottom"
-          },
-          {
-            element: "#hitung_kpr",
-            intro: "🏠 Ini hitung-kpr",
-          },
-        ],
-        showProgress: false,
-        showBullets: true,
-        nextLabel: "Lanjut →",
-        prevLabel: "← Kembali",
-        doneLabel: "Selesai",
-      });
+      const desktopStepsCandidates = [
+        {
+          element: "#home",
+          intro: "👋 Halo! Selamat datang di halaman utama.",
+        },
+        { element: "#iklan", intro: "🖼️ Ini bagian iklan utama kami." },
+        { element: "#rumah_terdekat", intro: "🏠 Ini daftar rumah terdekat." },
+        {
+          element: "#chatbot",
+          intro: "🤖 Ini chatbot yang siap membantu kamu.",
+          position: "bottom",
+        },
+        { element: "#hitung_kpr", intro: "💰 Ini fitur kalkulator KPR." },
+      ];
 
-      intro.start();
-      hasRunTour.current = true;
+      const mobileStepsCandidates = [
+        {
+          element: "#home",
+          intro: "👋 Halo! Selamat datang di halaman utama.",
+        },
+        { element: "#iklan", intro: "🖼️ Ini bagian iklan utama kami." },
+        { element: "#rumah_terdekat", intro: "🏠 Ini daftar rumah terdekat." },
+        {
+          element: "#responsive_chatbot",
+          intro: "🤖 Ini chatbot (mobile).",
+          position: "bottom",
+        },
+        {
+          element: "#responsive_hitung_kpr",
+          intro: "💰 Ini fitur kalkulator KPR (mobile).",
+        },
+      ];
 
-      intro.oncomplete(() => {
+      const candidates = isMobile
+        ? mobileStepsCandidates
+        : desktopStepsCandidates;
+
+      // Pastikan elemen target ada dan terlihat
+      const steps = candidates
+        .map((s) => {
+          const el = document.querySelector(s.element);
+          const isVisible = el && el.offsetParent !== null;
+          return isVisible ? s : null;
+        })
+        .filter(Boolean);
+
+      if (!steps.length) {
         localStorage.setItem("hasSeenIntro", "true");
-      });
+        return;
+      }
 
-      intro.onexit(() => {
-        localStorage.setItem("hasSeenIntro", "true");
-      });
-    }
-  }, 1000);
+      if (!hasRunTour.current) {
+        const intro = introJs();
+        intro.setOptions({
+          steps,
+          disableInteraction: true,
+          showProgress: false,
+          showBullets: true,
+          nextLabel: "Lanjut →",
+          prevLabel: "← Kembali",
+          doneLabel: "Selesai",
+        });
 
-  return () => clearTimeout(timer);
-}, []);
+        // 🟢 Saat berpindah step, jika di mobile, otomatis ganti slide
+        intro.onchange((targetElement) => {
+          if (isMobile && sliderFitur) {
+            const targetId = targetElement.id;
+            // Tunggu sedikit supaya slider siap sebelum digeser
+            setTimeout(() => {
+              if (targetId === "responsive_chatbot") {
+                sliderFitur.moveToIdx(0);
+              } else if (targetId === "responsive_hitung_kpr") {
+                sliderFitur.moveToIdx(1);
+              }
+            }, 200);
+          }
+        });
 
+        intro.start();
+        hasRunTour.current = true;
+
+        intro.oncomplete(() => {
+          localStorage.setItem("hasSeenIntro", "true");
+        });
+        intro.onexit(() => {
+          localStorage.setItem("hasSeenIntro", "true");
+        });
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [sliderFitur]);
 
   console.log(rumahTerdekat.error);
   return (
@@ -465,7 +496,10 @@ useEffect(() => {
         {/* Mobile */}
         <div className="md:hidden block mx-5">
           <div className="keen-slider my-10" ref={sliderFiturRef}>
-            <div className="keen-slider__slide flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-5 rounded-2xl shadow-lg">
+            <div
+              id="responsive_chatbot"
+              className="keen-slider__slide flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-5 rounded-2xl shadow-lg"
+            >
               <Canvas
                 style={{ width: "100%", height: "100%" }}
                 camera={{ position: [0, 0, 3], fov: 30 }}
@@ -477,7 +511,10 @@ useEffect(() => {
                 </Suspense>
                 <OrbitControls enableZoom={false} enablePan={false} />
               </Canvas>
-              <div id="chatbot" className="flex justify-center items-center text-center w-full md:w-auto">
+              <div
+                id="chatbot"
+                className="flex justify-center items-center text-center w-full md:w-auto"
+              >
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
                     Mau cari rekomendasi rumah yang cepat sesuai konsepmu?
@@ -491,7 +528,10 @@ useEffect(() => {
                 </div>
               </div>
             </div>
-            <div className="keen-slider__slide flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-5 rounded-2xl shadow-lg">
+            <div
+              id="responsive_hitung_kpr"
+              className="keen-slider__slide flex flex-col md:flex-row justify-center items-center gap-8 bg-white p-5 rounded-2xl shadow-lg"
+            >
               <img
                 ref={imgRefMobile}
                 className="w-[50%] rounded-2xl cursor-pointer"
@@ -499,7 +539,10 @@ useEffect(() => {
                 alt="KprImg"
                 onClick={handleRotateMobile}
               />
-              <div id="hitung_kpr" className="flex justify-center items-center text-center w-full md:w-auto">
+              <div
+                id="hitung_kpr"
+                className="flex justify-center items-center text-center w-full md:w-auto"
+              >
                 <div className="space-y-5 mb-2">
                   <h3 className="text-xl">
                     Mau hitung KPR rumah yang cepat dan sesuai?
