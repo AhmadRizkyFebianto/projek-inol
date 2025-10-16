@@ -39,9 +39,9 @@ function App() {
           <Route
             path="/jualrumah"
             element={
-              <ProtectedRoute>
-                <HalamanJual />
-              </ProtectedRoute>
+              <HalamanJual />
+              // <ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route

@@ -259,8 +259,8 @@ export default function Home() {
         intro.setOptions({
           steps,
           disableInteraction: true,
-          showProgress: false,
-          showBullets: true,
+          showProgress: true,
+          showBullets: false,
           nextLabel: "Lanjut →",
           prevLabel: "← Kembali",
           doneLabel: "Selesai",

@@ -57,13 +57,12 @@ export default function Sidebar({ onHitungKPR, onSimulasiKPR }) {
       const intro = introJs();
       intro.setOptions({
         steps,
-        disableInteraction: false,
+        disableInteraction: true,
+        showProgress: true,
+        showBullets: false,
         nextLabel: "Lanjut →",
         prevLabel: "← Kembali",
         doneLabel: "Selesai",
-        showStepNumbers: false,
-        scrollToElement: true,
-        exitOnOverlayClick: false,
       });
 
       const finish = () =>

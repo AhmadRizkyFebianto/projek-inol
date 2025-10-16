@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThreeCircles } from "react-loader-spinner";
 import API from "../../Config/Endpoint";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import EXIF from "exif-js";
 import PetaDragable from "./PetaDragable";
+import introJs from "intro.js";
+import "intro.js/minified/introjs.min.css";
 
 const ToastAlert = ({ message, type, isVisible, onClose }) => {
   useEffect(() => {
@@ -145,6 +147,153 @@ const JualRumah = () => {
   const [occupancyList, setOccupancyList] = useState([]);
 
   const [isEditMode, setIsEditMode] = useState(false);
+
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem("hasSeenIntroJual");
+    if (!hasSeenIntro) {
+      const intro = introJs();
+      intro.setOptions({
+        steps: [
+          {
+            element: "#btn-upload-gambar",
+            intro: "Mulai dengan upload foto rumah Anda (maksimal 5 foto).",
+          },
+          {
+            element: "#section-peta",
+            intro:
+              "Geser penanda di peta untuk menentukan lokasi rumah secara akurat.",
+          },
+          {
+            element: "#input-nama-rumah",
+            intro: "Masukkan nama rumah atau apartemen yang dijual.",
+          },
+          {
+            element: "#input-nama-pemilik",
+            intro: "Isi nama pemilik rumah sesuai dokumen kepemilikan.",
+          },
+          {
+            element: "#select-kategori-pemilik",
+            intro:
+              "Pilih kategori pemilik, misalnya perorangan atau developer.",
+          },
+          {
+            element: "#input-harga",
+            intro: "Masukkan harga jual rumah dalam rupiah.",
+          },
+          {
+            element: "#input-telepon",
+            intro:
+              "Masukkan nomor telepon aktif untuk dihubungi calon pembeli.",
+          },
+          {
+            element: "#input-alamat",
+            intro: "Tulis alamat lengkap rumah Anda.",
+          },
+          {
+            element: "#select-provinsi",
+            intro: "Pilih provinsi lokasi rumah.",
+          },
+          {
+            element: "#select-kota",
+            intro: "Pilih kota atau kabupaten lokasi rumah.",
+          },
+          {
+            element: "#select-kecamatan",
+            intro: "Pilih kecamatan lokasi rumah.",
+          },
+          {
+            element: "#select-kelurahan",
+            intro: "Pilih kelurahan lokasi rumah.",
+          },
+          {
+            element: "#select-dokumen",
+            intro: "Pilih jenis dokumen kepemilikan properti.",
+          },
+          {
+            element: "#select-klasifikasi-bangunan",
+            intro:
+              "Pilih klasifikasi bangunan (misalnya rumah tinggal, ruko, dsb).",
+          },
+          {
+            element: "#select-kategori-lahan",
+            intro: "Pilih kategori lahan, misalnya perumahan atau komersial.",
+          },
+          {
+            element: "#select-peruntukan",
+            intro: "Pilih peruntukan lahan properti Anda.",
+          },
+          {
+            element: "#input-luas-tanah",
+            intro: "Masukkan luas tanah dalam meter persegi (m²).",
+          },
+          {
+            element: "#input-luas-bangunan",
+            intro: "Masukkan luas bangunan dalam meter persegi (m²).",
+          },
+          {
+            element: "#input-total-lantai",
+            intro: "Masukkan jumlah lantai bangunan.",
+          },
+          {
+            element: "#select-status-transaksi",
+            intro: "Pilih status transaksi (dijual, disewakan, dll).",
+          },
+          {
+            element: "#select-kategori-aset",
+            intro: "Pilih kategori aset (residensial, komersial, dsb).",
+          },
+          {
+            element: "#select-tipe-aset",
+            intro: "Pilih tipe aset (rumah, apartemen, tanah kosong, dll).",
+          },
+          {
+            element: "#select-kondisi-bangunan",
+            intro: "Pilih kondisi bangunan (baru, bekas, renovasi, dll).",
+          },
+          {
+            element: "#select-klasifikasi-jalan",
+            intro:
+              "Pilih klasifikasi jalan di depan rumah (utama, lingkungan, gang, dll).",
+          },
+          {
+            element: "#select-jalur-lalu-lintas",
+            intro:
+              "Pilih tingkat kepadatan jalur lalu lintas di depan properti.",
+          },
+          {
+            element: "#select-potensi-banjir",
+            intro: "Pilih potensi banjir di sekitar lokasi.",
+          },
+          {
+            element: "#select-tingkat-hunian",
+            intro: "Pilih tingkat hunian di lingkungan sekitar.",
+          },
+          {
+            element: "#input-diskon",
+            intro: "Masukkan diskon yang ingin diberikan (opsional).",
+          },
+          {
+            element: "#btn-verifikasi",
+            intro:
+              "Klik tombol ini untuk memverifikasi semua data sebelum dikirim.",
+          },
+        ],
+        disableInteraction: true,
+        showProgress: true,
+        showBullets: false,
+        nextLabel: "Lanjut →",
+        prevLabel: "← Kembali",
+        doneLabel: "Selesai",
+      });
+
+      setTimeout(() => intro.start(), 800);
+
+      intro.oncomplete(() =>
+        localStorage.setItem("jualrumah_intro_seen", "true")
+      );
+      intro.onexit(() => localStorage.setItem("jualrumah_intro_seen", "true"));
+    }
+  }, []);
 
   // Fetch data awal
   useEffect(() => {
@@ -552,7 +701,10 @@ const JualRumah = () => {
               )}
 
               {/* Upload button */}
-              <label className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md cursor-pointer transition text-center text-white">
+              <label
+                id="btn-upload-gambar"
+                className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md cursor-pointer transition text-center text-white"
+              >
                 {uploadedFiles.length > 0 ? "Ganti Gambar" : "Upload Gambar"}
                 <input
                   type="file"
@@ -571,7 +723,7 @@ const JualRumah = () => {
 
             <div className="flex flex-col gap-4">
               <h3 className="font-bold">Peta Lokasi</h3>
-              <div className="flex flex-col gap-4">
+              <div id="section-peta" className="flex flex-col gap-4">
                 <PetaDragable
                   initialPosition={mapPosition}
                   onPositionChange={setMapPosition}
@@ -592,6 +744,7 @@ const JualRumah = () => {
                   Nama Rumah/Apartemen
                 </label>
                 <input
+                  id="input-nama-rumah"
                   type="text"
                   className="w-full p-2 rounded bg-white text-black"
                   placeholder="Contoh: Green Garden Apartment"
@@ -602,6 +755,7 @@ const JualRumah = () => {
                 <div>
                   <label className="block text-sm mb-1">Nama Pemilik</label>
                   <input
+                    id="input-nama-pemilik"
                     type="text"
                     className="w-full p-2 rounded bg-white text-black"
                     placeholder="Contoh: Budi Santoso"
@@ -610,6 +764,7 @@ const JualRumah = () => {
                 <div className="relative">
                   <label className="block text-sm mb-1">Kategori Pemilik</label>
                   <div
+                    id="select-kategori-pemilik"
                     className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
                     onClick={() => toggleArrow("Kategori Pemilik")}
                   >
@@ -653,6 +808,7 @@ const JualRumah = () => {
               <div>
                 <label className="block text-sm mb-1">Harga</label>
                 <input
+                  id="input-harga"
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -666,6 +822,7 @@ const JualRumah = () => {
               <div>
                 <label className="block text-sm mb-1">Nomor Telepon</label>
                 <input
+                  id="input-telepon"
                   type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"
@@ -679,6 +836,7 @@ const JualRumah = () => {
               <div>
                 <label className="block text-sm mb-1">Lokasi Rumah</label>
                 <input
+                  id="input-alamat"
                   type="text"
                   className="w-full p-2 rounded bg-white text-black"
                   placeholder="Contoh: Jl. Sudirman No. 123, Jakarta Selatan"
@@ -689,30 +847,34 @@ const JualRumah = () => {
                 {[
                   {
                     label: "Provinsi",
+                    id: "select-provinsi",
                     list: provinsiList,
                     value: selectedProvinsi,
                     handler: handleProvinsiSelect,
                   },
                   {
                     label: "Kota/Kabupaten",
+                    id: "select-kota",
                     list: kotaList,
                     value: selectedKota,
                     handler: handleKotaSelect,
                   },
                   {
                     label: "Kecamatan",
+                    id: "select-kecamatan",
                     list: kecamatanList,
                     value: selectedKecamatan,
                     handler: handleKecamatanSelect,
                   },
                   {
                     label: "Kelurahan",
+                    id: "select-kelurahan",
                     list: kelurahanList,
                     value: selectedKelurahan,
                     handler: handleKelurahanSelect,
                   },
-                ].map(({ label, list, value, handler }) => (
-                  <div key={label} className="relative">
+                ].map(({ label, id, list, value, handler }) => (
+                  <div key={label} className="relative" id={id}>
                     <label className="block text-sm mb-1">{label}</label>
                     <div
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
@@ -759,6 +921,7 @@ const JualRumah = () => {
                   <div className="relative">
                     <label className="block text-sm mb-1">Dokumen</label>
                     <div
+                      id="select-dokumen"
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
                       onClick={() => toggleArrow("Dokumen")}
                     >
@@ -802,6 +965,7 @@ const JualRumah = () => {
                       Klasifikasi Bangunan
                     </label>
                     <div
+                      id="select-klasifikasi-bangunan"
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
                       onClick={() => toggleArrow("Klasifikasi Bangunan")}
                     >
@@ -845,6 +1009,7 @@ const JualRumah = () => {
                   <div className="relative">
                     <label className="block text-sm mb-1">Kategori Lahan</label>
                     <div
+                      id="select-kategori-lahan"
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
                       onClick={() => toggleArrow("Kategori Lahan")}
                     >
@@ -886,6 +1051,7 @@ const JualRumah = () => {
                   <div className="relative">
                     <label className="block text-sm mb-1">Peruntukan</label>
                     <div
+                      id="select-peruntukan"
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
                       onClick={() => toggleArrow("Peruntukan")}
                     >
@@ -934,6 +1100,7 @@ const JualRumah = () => {
                     <div className="relative">
                       <label className="block text-sm mb-1">Luas Tanah</label>
                       <input
+                        id="input-luas-tanah"
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
@@ -951,6 +1118,7 @@ const JualRumah = () => {
                         Luas Bangunan
                       </label>
                       <input
+                        id="input-luas-bangunan"
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
@@ -966,6 +1134,7 @@ const JualRumah = () => {
                     <div className="relative">
                       <label className="block text-sm mb-1">Total Lantai</label>
                       <input
+                        id="input-total-lantai"
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
@@ -982,6 +1151,7 @@ const JualRumah = () => {
                       Status Transaksi
                     </label>
                     <div
+                      id="select-status-transaksi"
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
                       onClick={() => toggleArrow("Status Transaksi")}
                     >
@@ -1022,95 +1192,38 @@ const JualRumah = () => {
                   </div>
                 </div>
               </div>
-              {/* <div>
-                                <h3 className="font-semibold mb-2">Detail</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {[
-                                        { label: "Luas Tanah", unit: "m²", state: luasTanah, setter: setLuasTanah },
-                                        { label: "Luas Bangunan", unit: "m²", state: luasBangunan, setter: setLuasBangunan },
-                                        { label: "Total Lantai", unit: "", state: totalLantai, setter: setTotalLantai },
-                                        { label: "Status Transaksi", list: statusDataList, state: statusTransaksi, setter: setStatusTransaksi },
-                                    ].map(({ label, unit, state, setter, list }) => (
-                                        <div key={label} className="relative">
-                                            <label className="block text-sm mb-1">{label}</label>
-                                            {label === "Status Transaksi" ? (
-                                                <>
-                                                    <div
-                                                        className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
-                                                        onClick={() => toggleArrow(label)}
-                                                    >
-                                                        <span>{state || `Pilih ${label}`}</span>
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            className={`h-5 w-5 transition-transform ${showArrowUp[label] ? "rotate-180" : ""}`}
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                        >
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                        </svg>
-                                                    </div>
-                                                    {showArrowUp[label] && (
-                                                        <ul className="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-40 overflow-y-auto">
-                                                            {list.map((item, i) => (
-                                                                <li
-                                                                    key={i}
-                                                                    className="p-2 text-gray-800 hover:bg-blue-100 hover:text-white cursor-pointer transition-colors"
-                                                                    onClick={() => {
-                                                                        setter(item.name);
-                                                                        toggleArrow(label);
-                                                                    }}
-                                                                >
-                                                                    {item.name}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </>
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    inputMode="numeric"
-                                                    pattern="[0-9]*"
-                                                    className="w-full p-2 rounded bg-white text-black"
-                                                    placeholder={`Contoh: ${unit ? "120" : "5"}`}
-                                                    value={state}
-                                                    onChange={(e) => handleNumericInput(e, setter)}
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div> */}
-
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   {
                     label: "Kategori Asset",
+                    id: "select-kategori-aset",
                     list: assetCategoryList,
                     state: kategoriAset,
                     setter: setKategoriAset,
                   },
                   {
                     label: "Tipe Asset",
+                    id: "select-tipe-aset",
                     list: assetTypeList,
                     state: tipeAset,
                     setter: setTipeAset,
                   },
                   {
                     label: "Kondisi Bangunan",
+                    id: "select-kondisi-bangunan",
                     list: conditionBuildingList,
                     state: kondisiBangunan,
                     setter: setKondisiBangunan,
                   },
                   {
                     label: "Klasifikasi Jalan",
+                    id: "select-klasifikasi-jalan",
                     list: classRoadList,
                     state: klasifikasiJalan,
                     setter: setKlasifikasiJalan,
                   },
-                ].map(({ label, list, state, setter }) => (
-                  <div key={label} className="relative">
+                ].map(({ label, id, list, state, setter }) => (
+                  <div key={label} className="relative" id={id}>
                     <label className="block text-sm mb-1">{label}</label>
                     <div
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
@@ -1158,24 +1271,27 @@ const JualRumah = () => {
                 {[
                   {
                     label: "Jalur Lalu Lintas",
+                    id: "select-jalur-lalu-lintas",
                     list: trafficVolumeList,
                     state: jalurLaluLintas,
                     setter: setJalurLaluLintas,
                   },
                   {
                     label: "Potensi Banjir",
+                    id: "select-potensi-banjir",
                     list: floodingList,
                     state: potensiBanjir,
                     setter: setPotensiBanjir,
                   },
                   {
                     label: "Tingkat Hunian Bangunan",
+                    id: "select-tingkat-hunian",
                     list: occupancyList,
                     state: tingkatHunian,
                     setter: setTingkatHunian,
                   },
-                ].map(({ label, list, state, setter }) => (
-                  <div key={label} className="relative">
+                ].map(({ label, id, list, state, setter }) => (
+                  <div key={label} className="relative" id={id}>
                     <label className="block text-sm mb-1">{label}</label>
                     <div
                       className="relative w-full p-2 rounded bg-white text-black cursor-pointer flex justify-between items-center"
@@ -1220,6 +1336,7 @@ const JualRumah = () => {
                 <div>
                   <label className="block text-sm mb-1">Discount (%)</label>
                   <input
+                    id="input-diskon"
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
@@ -1236,6 +1353,7 @@ const JualRumah = () => {
                   *Cek Ulang Sebelum Klik Verifikasi Data
                 </p>
                 <button
+                  id="btn-verifikasi"
                   type="button"
                   onClick={handleSubmit}
                   className="w-full bg-green-500 hover:bg-green-600 py-2 rounded-lg font-semibold transition"
