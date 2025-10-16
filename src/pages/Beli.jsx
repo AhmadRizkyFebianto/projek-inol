@@ -131,7 +131,7 @@ export default function Beli() {
       intro.setOptions({
         steps: visibleSteps,
         disableInteraction: false,
-        showProgress: true,
+        showProgress: false,
         showBullets: true,
         nextLabel: "Lanjut →",
         prevLabel: "← Kembali",

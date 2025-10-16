@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../Components/Elements/Navbar";
 import Footer from "../Components/Elements/Footer";
 // import ProfileImage from "../assets/profile.jpg";
@@ -9,6 +9,9 @@ import { HalamanUbahProfile, HalamanKSB } from "../Pages/HalamanUtama";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import API from "../Config/Endpoint";
+import introJs from "intro.js";
+import "intro.js/minified/introjs.min.css";
+
 export default function Profile(props) {
   const [profile, setProfile] = useState({
     nama: "",
@@ -41,6 +44,65 @@ export default function Profile(props) {
   const [jual, setJual] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchjual, setSearchJual] = useState("");
+
+  const hasRunIntro = useRef(false);
+
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem("hasSeenIntroProfile");
+
+    // hanya jalankan intro jika belum pernah dilihat
+    if (!hasRunIntro.current && !hasSeenIntro) {
+      hasRunIntro.current = true;
+
+      const intro = introJs();
+      intro.setOptions({
+        steps: [
+          {
+            element: "#btn-edit-foto",
+            intro: "Klik di sini untuk mengganti foto profil Anda.",
+            position: "bottom",
+          },
+          {
+            element: "#card-data-profil",
+            intro:
+              "Di sini Anda dapat melihat data profil seperti nama, email, lokasi, dan nomor HP.",
+            position: "right",
+          },
+          {
+            element: "#btn-ubah-data",
+            intro:
+              "Gunakan tombol ini untuk memperbarui data profil Anda seperti nama atau nomor telepon.",
+            position: "bottom",
+          },
+          {
+            element: "#btn-ubah-password",
+            intro: "Gunakan tombol ini untuk mengganti password akun Anda.",
+            position: "bottom",
+          },
+        ],
+        disableInteraction: true,
+        showProgress: false,
+        showBullets: true,
+        nextLabel: "Lanjut →",
+        prevLabel: "← Kembali",
+        doneLabel: "Selesai",
+      });
+
+      // Jalankan setelah sedikit delay agar DOM siap
+      setTimeout(() => {
+        intro.start();
+      }, 800);
+
+      // Saat user selesai atau skip → simpan status ke localStorage
+      intro.oncomplete(() => {
+        localStorage.setItem("profile_intro_seen", "true");
+      });
+
+      intro.onexit(() => {
+        localStorage.setItem("profile_intro_seen", "true");
+      });
+    }
+  }, []);
 
   const maskPhone = (phone) => {
     if (!phone) return "";
@@ -217,6 +279,7 @@ export default function Profile(props) {
             onError={(e) => (e.currentTarget.src = ProfileImage)}
           />
           <button
+            id="btn-edit-foto"
             onClick={handleEditClick}
             className="flex h-5 w-28 border-2 border-black items-center py-4 px-4 gap-4 rounded-full"
           >
@@ -227,7 +290,10 @@ export default function Profile(props) {
       </div>
 
       <div className="flex flex-col lg:flex-row items-start mx-5 lg:mx-40 my-10 gap-10">
-        <div className="bg-gray-100 flex flex-col justify-center border border-yellow-300 rounded-lg px-5 lg:px-15 py-5 w-full lg:w-auto">
+        <div
+          id="card-data-profil"
+          className="bg-gray-100 flex flex-col justify-center border border-yellow-300 rounded-lg px-5 lg:px-15 py-5 w-full lg:w-auto"
+        >
           <div>
             <div className="flex flex-col space-y-1">
               <label
@@ -293,12 +359,14 @@ export default function Profile(props) {
           <div className="flex flex-col mt-4 gap-3">
             <div className="flex gap-4">
               <button
+                id="btn-ubah-data"
                 className="w-auto bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow"
                 onClick={toggleUbahPopup}
               >
                 Ubah Data
               </button>
               <button
+                id="btn-ubah-password"
                 className="w-auto bg-yellow-200 px-3 py-2 rounded-lg hover:bg-yellow-300 transition-all shadow"
                 onClick={toggleUbahPassword}
               >
