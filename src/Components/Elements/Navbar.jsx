@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import ProfileImage from "../../assets/profile.jpg";
+// import ProfileImage from "../../assets/profile.jpg"; // fallback jika tidak ada foto
 import Logo from "../../assets/logo.png";
 import Menu from "../../assets/menu.png";
 import Close from "../../assets/close.png";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import {
   HalamanLogin,
@@ -20,39 +21,81 @@ export default function Navbar() {
   const [showLKSPopup, setShowLKSPopup] = useState(false);
   const [showVerifPopup, setShowVerifPopup] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null); // ✅ state user
+  const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [verifData, setVerifData] = useState(null);
   const location = useLocation();
-  const nameImage = localStorage.getItem("foto_profil");
-  const image =
-    nameImage && nameImage.trim() !== "" && nameImage !== "null"
-      ? `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${nameImage}`
-      : ProfileImage;
+
+  const [profileImage, setProfileImage] = useState();
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
-    setProfile({ nama: "", lokasi: "", email: "", phone: "" });
-    navigate("/");
+  const [profile, setProfile] = useState({
+    nama: "",
+    lokasi: "",
+    email: "",
+    phone: "",
+    profil: "",
+  });
+
+  const handleLogout = async () => {
+    const email = localStorage.getItem("auth_email");
+
+    try {
+      if (email) {
+        await axios.get(
+          `https://smataco.my.id/dev/unez/CariRumahAja/routes/user.php?mode=logout&email=${email}`
+        );
+      }
+
+      // Hanya hapus data auth, BUKAN favorites
+      localStorage.removeItem("auth_email");
+      localStorage.removeItem("auth_fullname");
+      localStorage.removeItem("auth_phone");
+      localStorage.removeItem("foto_profil");
+
+      setUser(null);
+      setProfile({ nama: "", lokasi: "", email: "", phone: "" });
+      navigate("/");
+    } catch (error) {
+      console.error("Gagal logout dari server:", error);
+      // Tetap hapus auth data saja
+      localStorage.removeItem("auth_email");
+      localStorage.removeItem("auth_fullname");
+      localStorage.removeItem("auth_phone");
+      localStorage.removeItem("foto_profil");
+      navigate("/");
+    }
+  };
+
+  const updateUser = () => {
+    const hasAuth = Boolean(
+      localStorage.getItem("auth_email") &&
+        localStorage.getItem("auth_fullname")
+    );
+
+    if (hasAuth && user !== "Profile") {
+      setUser("Profile");
+      const savedImage = localStorage.getItem("foto_profil");
+      if (savedImage) {
+        const url = `https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/${savedImage.trim()}`;
+        setProfileImage(url);
+      } else {
+        setProfileImage(
+          "https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/noProfilePict/noprofile_pict.jpeg"
+        );
+      }
+    } else if (!hasAuth && user !== null) {
+      setUser(null);
+      setProfileImage(
+        "https://smataco.my.id/dev/unez/CariRumahAja/foto/ProfilePicture/noProfilePict/noprofile_pict.jpeg"
+      );
+    }
   };
 
   useEffect(() => {
-    const updateUser = () => {
-      if (localStorage.getItem("auth_fullname")) {
-        setUser("Profile");
-      } else {
-        setUser(null);
-      }
-    };
-
-    // cek pertama kali
     updateUser();
-
-    // kalau ada perubahan localStorage
     window.addEventListener("storage", updateUser);
-
     return () => {
       window.removeEventListener("storage", updateUser);
     };
@@ -61,14 +104,27 @@ export default function Navbar() {
   const toggleLoginPopup = () => setShowLoginPopup(!showLoginPopup);
   const toggleDaftarPopup = () => setShowDaftarPopup(!showDaftarPopup);
   const toggleLKSPopup = () => setShowLKSPopup(!showLKSPopup);
-  const toggleVerifPopup = () => setShowVerifPopup(!showVerifPopup);
-  const routelks = () => {
-    toggleLoginPopup();
-    toggleLKSPopup();
+  const toggleVerifPopup = () => setShowVerifPopup(!showLKSPopup);
+
+  const closeVerifPopup = () => {
+    setVerifData(null);
+    setShowVerifPopup(false);
   };
-  const routeverif = () => {
-    toggleLKSPopup();
-    toggleVerifPopup();
+
+  const openLksPopup = () => {
+    setShowLoginPopup(false);
+    setShowLKSPopup(true);
+  };
+
+  const handleRegisterSuccess = (data) => {
+    setVerifData(data);
+    setShowDaftarPopup(false);
+    setShowVerifPopup(true);
+  };
+
+  const handleBackToLogin = () => {
+    setShowLKSPopup(false);
+    setShowLoginPopup(true);
   };
 
   const isActive = (path) =>
@@ -81,13 +137,13 @@ export default function Navbar() {
       <nav className="shadow">
         <div className="flex justify-between items-center px-7 py-2.5">
           <Link to="/">
-            <img src={Logo} width="50" height="40" />
+            <img src={Logo} width="50" height="40" alt="Logo" />
           </Link>
 
           {/* Mobile menu icon */}
           <div className="block md:hidden lg:hidden">
             <div onClick={() => setMenuOpen(true)} aria-label="Open Menu">
-              <img src={Menu} width="30" height="30" />
+              <img src={Menu} width="30" height="30" alt="Menu" />
             </div>
           </div>
 
@@ -126,7 +182,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            {/* ✅ kalau ada user tampilkan profile, kalau tidak tampilkan login/register */}
+            {/* Profil atau Login/Register */}
             {user ? (
               <li>
                 <div className="relative">
@@ -134,11 +190,12 @@ export default function Navbar() {
                     className="flex items-center cursor-pointer"
                     onClick={toggleDropdown}
                   >
+                    {/* ✅ Gunakan profileImage yang diambil dari localStorage */}
                     <img
-                      src={image}
+                      src={profileImage}
                       alt="Profile"
                       className="rounded-full w-8"
-                      onError={(e) => (e.currentTarget.src = ProfileImage)}
+                      onError={(e) => (e.currentTarget.src = profileImage)}
                     />
                   </div>
 
@@ -193,10 +250,10 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Overlay */}
+      {/* Overlay mobile */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-gray-700 opacity-40 md:fixed lg:hidden"
+          className="fixed inset-0 z-40 bg-gray-700 opacity-40 md:hidden lg:hidden"
           onClick={() => setMenuOpen(false)}
         />
       )}
@@ -205,11 +262,11 @@ export default function Navbar() {
       <div
         className={`fixed top-0 right-0 z-50 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out ${
           menuOpen ? "translate-x-0" : "translate-x-full"
-        } lg:hidden`}
+        } lg:hidden md:block`}
       >
         <div className="flex justify-end p-4">
           <div onClick={() => setMenuOpen(false)} aria-label="Close Menu">
-            <img src={Close} width="40" height="40" />
+            <img src={Close} width="40" height="40" alt="Close" />
           </div>
         </div>
         <div className="flex flex-col space-y-6 p-6 font-medium">
@@ -235,18 +292,19 @@ export default function Navbar() {
             Simulasi KPR
           </Link>
 
-          {/* ✅ Mobile juga cek login */}
+          {/* Mobile: Profil atau Login/Register */}
           {user ? (
             <div className="relative">
               <div
                 className="flex items-center cursor-pointer"
                 onClick={toggleDropdown}
               >
+                {/* ✅ Gunakan profileImage */}
                 <img
-                  src={image}
+                  src={profileImage}
                   alt="Profile"
                   className="rounded-full w-8"
-                  onError={(e) => (e.currentTarget.src = ProfileImage)}
+                  onError={(e) => (e.currentTarget.src = profileImage)}
                 />
               </div>
 
@@ -302,7 +360,7 @@ export default function Navbar() {
             onClick={toggleLoginPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanLogin close={toggleLoginPopup} routeLKS={routelks} />
+          <HalamanLogin close={toggleLoginPopup} routeLKS={openLksPopup} />
         </div>
       )}
       {showDaftarPopup && (
@@ -311,16 +369,22 @@ export default function Navbar() {
             onClick={toggleDaftarPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanRegister close={toggleDaftarPopup} />
+          <HalamanRegister
+            close={toggleDaftarPopup}
+            onRegisterSuccess={handleRegisterSuccess}
+          />
         </div>
       )}
       {showLKSPopup && (
         <div className="fixed inset-0 flex justify-center items-center z-50">
           <div
-            onClick={toggleLKSPopup}
+            onClick={handleBackToLogin}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanLKS close={toggleLKSPopup} routeverif={routeverif} />
+          <HalamanLKS
+            close={handleBackToLogin}
+            onBackToLogin={handleBackToLogin}
+          />
         </div>
       )}
       {showVerifPopup && (
@@ -329,7 +393,12 @@ export default function Navbar() {
             onClick={toggleVerifPopup}
             className="absolute inset-0 bg-black/35 backdrop-blur-md"
           />
-          <HalamanVerif close={toggleVerifPopup} />
+          <HalamanVerif
+            close={closeVerifPopup}
+            data={verifData}
+            onUpdateUser={updateUser}
+            isForgotPassword={true}
+          />
         </div>
       )}
     </>

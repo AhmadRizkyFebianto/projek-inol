@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../Elements/Button";
 import API from "../../Config/Endpoint";
+import axios from "axios";
 
 const ToastAlert = ({ message, type, isVisible, onClose }) => {
   useEffect(() => {
@@ -30,19 +31,20 @@ const ToastAlert = ({ message, type, isVisible, onClose }) => {
     </div>
   );
 };
-const OTPInput = ({ kode, name, email, close, onUpdateUser }) => {
+
+const OTPInput = ({ kode, name, email, password, close, onUpdateUser }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { otp: otpFromAPI, phone } = location.state || {};
+  const { phone } = location.state || {};
   const length = 4;
   const [otp, setOtp] = useState(new Array(length).fill(""));
   const inputRefs = useRef([]);
   const [count, setCount] = useState(120);
-  const [isResendAllowed, setIsResendAllowed] = useState(false);
   const [otpReal, setOtpReal] = useState("");
   const [phoneReal, setPhoneReal] = useState("");
   const [namaLengkap, setNamaLengkap] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
 
   const [toast, setToast] = useState({
     message: "",
@@ -58,40 +60,69 @@ const OTPInput = ({ kode, name, email, close, onUpdateUser }) => {
     setToast((prev) => ({ ...prev, visible: false }));
   };
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   useEffect(() => {
     if (!kode) return;
 
-    let payload = {
-      kode: kode,
-      action: "decrypt",
+    const fetchDecrypt = async () => {
+      try {
+        const response = await axios.post(
+          `${API.endpointregist}`,
+          {
+            mode: "POST",
+            action: "decrypt",
+            nomer_telepon: phone || "",
+            email: email || "",
+            nama_lengkap: name || "",
+            kode: kode,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        const data = response.data;
+
+        if (data && data.otp) {
+          setOtpReal(data.otp);
+          const realPhone = data.nomer_telepon || phone;
+          if (!realPhone) {
+            throw new Error("Nomor telepon tidak ditemukan");
+          }
+          setPhoneReal(realPhone);
+          setNamaLengkap(name || data.nama_lengkap || "");
+          setUserEmail(email || data.email || "");
+          console.log("KODE OTP YANG DITERIMA DARI BACKEND:", data.otp);
+        } else {
+          showToast("Gagal memuat data verifikasi.", "error");
+        }
+      } catch (err) {
+        console.error("Decrypt error:", err);
+        showToast("Terjadi kesalahan saat memuat data.", "error");
+      }
     };
 
-    fetch(API.endpointregist, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        setOtpReal(response.otp);
-        setPhoneReal(response.nomer_telepon);
-        setNamaLengkap(name); // dari props
-        setUserEmail(email); // dari props
-      });
-  }, [kode, name, email]); // dependensi
+    fetchDecrypt();
+  }, [kode]);
+
+  useEffect(() => {
+    if (count <= 0) return;
+    const intervalId = setInterval(() => {
+      setCount((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   // useEffect(() => {
-  //     if (otpFromAPI) {
-  //         const digits = otpFromAPI.toString().slice(0, length).split('');
-  //         const newOtp = new Array(length).fill("");
-  //         digits.forEach((d, i) => { if (!isNaN(d)) newOtp[i] = d; });
-  //         setOtp(newOtp);
-
-  //         const focusIndex = Math.min(digits.length, length - 1);
-  //         setTimeout(() => inputRefs.current[focusIndex]?.focus(), 50);
-  //     }
-  //     console.log("OTP dari API:", otpFromAPI);
-  // }, [otpFromAPI]);
+  //     console.log('OTP saat ini:', otp);
+  // }, [otp]);
 
   const handleChange = (target, index) => {
     const val = target.value;
@@ -99,13 +130,18 @@ const OTPInput = ({ kode, name, email, close, onUpdateUser }) => {
     const newOtp = [...otp];
     newOtp[index] = val.slice(-1);
     setOtp(newOtp);
-    if (val !== "" && index < length - 1) inputRefs.current[index + 1]?.focus();
+    if (val !== "" && index < length - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
   };
+
+  // console.log(otp);
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
-      if (otp[index] === "" && index > 0) inputRefs.current[index - 1]?.focus();
-      else {
+      if (otp[index] === "" && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      } else {
         const newOtp = [...otp];
         newOtp[index] = "";
         setOtp(newOtp);
@@ -126,52 +162,160 @@ const OTPInput = ({ kode, name, email, close, onUpdateUser }) => {
       if (!isNaN(char)) newOtp[idx] = char;
     });
     setOtp(newOtp);
-    setTimeout(
-      () => inputRefs.current[Math.min(pasteData.length, length - 1)]?.focus(),
-      50
-    );
+    setTimeout(() => {
+      inputRefs.current[Math.min(pasteData.length, length - 1)]?.focus();
+    }, 50);
   };
 
-  useEffect(() => {
-    if (count <= 0) return setIsResendAllowed(true);
-    const intervalId = setInterval(() => setCount((prev) => prev - 1), 1000);
-    return () => clearInterval(intervalId);
-  }, [count]);
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const code = otp.join("").trim();
+    if (!code || code.length !== 4) {
+      showToast("Masukkan kode OTP lengkap.", "error");
+      return;
+    }
 
-    if (code === otpReal) {
-      localStorage.setItem("auth_phone", phoneReal);
-      localStorage.setItem("auth_email", userEmail);
-      localStorage.setItem("auth_fullname", namaLengkap);
-      localStorage.setItem("tipe_time", Date.now());
+    try {
+      const response = await fetch(API.endpointregist, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "POST",
+          action: "register",
+          name: name,
+          email: email,
+          phone: phoneReal || phone,
+          password: password,
+        }),
+      });
 
-      if (typeof onUpdateUser === "function") {
-        onUpdateUser();
-      }
+      const result = await response.json();
 
-      showToast(`Halo, ${namaLengkap} Selamat Datang`, "success");
-
-      setTimeout(() => {
-        if (typeof close === "function") {
-          close();
+      if (result.status === "success") {
+        localStorage.setItem("auth_email", email);
+        localStorage.setItem("auth_fullname", name);
+        localStorage.setItem("auth_phone", phoneReal || phone);
+        if (result.foto_profil) {
+          localStorage.setItem("foto_profil", "/images/noprofile.png");
         }
-        navigate("/");
-      }, 1000);
-    } else {
-      setOtp(new Array(length).fill(""));
+
+        showToast(`Halo, ${name}! Akun Anda telah diverifikasi.`, "success");
+        setTimeout(() => {
+          if (typeof onUpdateUser === "function") onUpdateUser();
+          if (typeof close === "function") close();
+          navigate("/");
+        }, 1000);
+      } else {
+        throw new Error(result.message || "Kode OTP salah.");
+      }
+    } catch (err) {
+      console.error("Verifikasi gagal:", err);
+      showToast("Verifikasi gagal: " + err.message, "error");
+      setOtp(new Array(4).fill(""));
       inputRefs.current[0]?.focus();
-      showToast("Kode OTP salah, silakan coba lagi.", "error");
     }
   };
 
-  const handleResend = () => {
-    if (!isResendAllowed) return;
-    setCount(120);
-    setIsResendAllowed(false);
-  };
+  // const handleSubmit = async () => {
+  //     const code = otp.join('').trim();
+  //     if (!code || code.length !== 4) {
+  //         showToast('Masukkan kode OTP lengkap.', 'error');
+  //         return;
+  //     }
 
+  //     try {
+  //         const response = await fetch(API.endpointregist, {
+  //             method: "POST", // atau sesuaikan jika backend terima PUT/UPDATE via POST
+  //             headers: { "Content-Type": "application/json" },
+  //             body: JSON.stringify({
+  //                 mode: "POST",
+  //                 action: "register",
+  //                 name: name,
+  //                 email: email,
+  //                 phone: phoneReal || phone,
+  //                 password: password
+  //             })
+  //         });
+
+  //         const result = await response.json();
+  //         if (result.status === "success") {
+  //             // Simpan data user ke localStorage
+  //             localStorage.setItem("auth_phone", phoneReal || phone);
+  //             localStorage.setItem("auth_email", email);
+  //             localStorage.setItem("auth_fullname", name);
+  //             localStorage.setItem("foto_profil", '/images/noprofile.png');
+
+  //             showToast(`Halo, ${name}! Akun Anda telah diverifikasi.`, "success");
+  //             setTimeout(() => {
+  //                 if (typeof close === "function") close();
+  //                 navigate("/");
+  //             }, 1000);
+  //         } else {
+  //             throw new Error(result.message || "Verifikasi gagal.");
+  //         }
+  //     } catch (err) {
+  //         console.error("Verifikasi gagal:", err);
+  //         showToast("Verifikasi gagal: " + err.message, "error");
+  //         // Reset input OTP
+  //         setOtp(new Array(4).fill(""));
+  //         inputRefs.current[0]?.focus();
+  //     }
+  // };
+
+  const handleResend = async () => {
+    if (isResending || !phoneReal) return;
+    setIsResending(true);
+
+    try {
+      const response = await fetch(API.endpointregist, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "POST",
+          action: "generate_otp",
+          phone: phoneReal,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.status === "success") {
+        // 2. Ambil kode baru
+        const newKode = result.kode;
+
+        // 3. Decrypt untuk lihat OTP (opsional, hanya untuk debug)
+        try {
+          const decryptRes = await axios.post(
+            `${API.endpointregist}`,
+            {
+              mode: "POST",
+              action: "decrypt",
+              nomer_telepon: phoneReal || phone,
+              email: userEmail || email,
+              nama_lengkap: namaLengkap || name,
+              kode: newKode,
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          const decrypted = decryptRes.data;
+          if (decrypted && decrypted.otp) {
+            console.log("🆕 OTP BARU YANG DIKIRIM:", decrypted.otp);
+          }
+        } catch (decryptErr) {
+          console.warn("Gagal decrypt OTP baru:", decryptErr);
+        }
+        setCount(120);
+        showToast("OTP baru dikirim!", "success");
+      } else {
+        showToast(result.message, "error");
+      }
+    } catch (err) {
+      showToast("Gagal mengirim ulang OTP.", "error");
+    } finally {
+      setIsResending(false);
+    }
+  };
   return (
     <>
       <ToastAlert
@@ -182,9 +326,9 @@ const OTPInput = ({ kode, name, email, close, onUpdateUser }) => {
       />
       <div className="flex flex-col items-center mt-15 gap-4">
         <p className="text-center mb-6">
-          Masukkan kode verifikasi yang dikirim ke nomor {phone}
+          Masukkan kode verifikasi yang dikirim ke nomor {phoneReal || phone}
         </p>
-        <div className="flex space-x-3 mb-12 ">
+        <div className="flex space-x-3 mb-8">
           {otp.map((data, index) => (
             <input
               key={index}
@@ -195,15 +339,34 @@ const OTPInput = ({ kode, name, email, close, onUpdateUser }) => {
               onChange={(e) => handleChange(e.target, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={handlePaste}
-              className="w-12 h-12 text-center text-xl font-bold border bg-amber-50 rounded-lg focus:border-blue-500"
+              className="w-12 h-12 text-center text-xl font-bold border bg-amber-50 rounded-lg focus:border-blue-500 focus:outline-none"
             />
           ))}
         </div>
-        <label>{count > 0 ? `${count} detik` : "Kirim ulang sekarang"}</label>
-        <div className="flex gap-4 mt-6">
-          <Button onClick={handleSubmit}>Lanjut</Button>
-          <Button onClick={handleResend} disabled={!isResendAllowed}>
-            Kirim Ulang
+
+        {count > 0 ? (
+          <p className="text-sm text-black-600">
+            Kode berlaku selama:{" "}
+            <span className="font-mono">{formatTime(count)}</span>
+          </p>
+        ) : (
+          <button
+            onClick={handleResend}
+            disabled={isResending}
+            className={`text-blue-600 font-medium hover:underline focus:outline-none ${
+              isResending ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {isResending ? "Mengirim..." : "Kirim ulang kode"}
+          </button>
+        )}
+
+        <div className="mt-6">
+          <Button
+            onClick={handleSubmit}
+            disabled={otp.join("").length !== length}
+          >
+            Lanjut
           </Button>
         </div>
       </div>

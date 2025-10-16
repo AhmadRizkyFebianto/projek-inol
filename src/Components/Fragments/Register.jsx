@@ -3,6 +3,8 @@ import Input from "../Elements/Input";
 import Button from "../Elements/Button";
 import { useNavigate } from "react-router-dom";
 import API from "../../Config/Endpoint";
+import { SKLayout } from "../Layouts/LayoutUtama";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const ToastAlert = ({ message, type, isVisible, onClose }) => {
   useEffect(() => {
@@ -47,12 +49,13 @@ const Register = ({ onRegisterSuccess, close }) => {
   const [nomorTelepon, setNomorTelepon] = useState("");
   const [kataSandi, setKataSandi] = useState("");
 
-  // State untuk toast
   const [toast, setToast] = useState({
     message: "",
     type: "error",
     visible: false,
   });
+
+  const [nomorTeleponE164, setNomorTeleponE164] = useState("");
 
   const showToast = (message, type = "error") => {
     setToast({ message, type, visible: true });
@@ -62,47 +65,70 @@ const Register = ({ onRegisterSuccess, close }) => {
     setToast((prev) => ({ ...prev, visible: false }));
   };
 
-  const handleNamaLengkapChange = (newValue) => setNamaLengkap(newValue);
-  const handleEmailChange = (newValue) => setEmail(newValue);
-  const handleNomorTeleponChange = (newValue) => {
-    const numericValue = newValue.replace(/[^0-9]/g, "");
-    if (numericValue === "") {
-      setNomorTelepon("");
+  const [showSK, setShowSK] = useState(false);
+
+  const handleNamaLengkapChange = (e) => {
+    const newValue = e.target.value;
+    if (typeof newValue !== "string") {
+      setNamaLengkap("");
       return;
     }
 
-    let correctedValue = numericValue;
-    if (correctedValue.length === 1 && correctedValue.startsWith("8")) {
-      correctedValue = "0" + correctedValue;
-    }
-
-    if (correctedValue.startsWith("08")) {
-      const limitedValue = correctedValue.slice(0, 13);
-      setNomorTelepon(limitedValue);
+    let sanitized = newValue.replace(/[^a-zA-Z\s.\-'’]/g, "");
+    sanitized = sanitized.trimStart();
+    if (sanitized.trim() === "") {
+      setNamaLengkap("");
+    } else {
+      setNamaLengkap(sanitized);
     }
   };
-  const handleKataSandiChange = (newValue) => setKataSandi(newValue);
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleNomorTeleponChange = (e) => {
+    const rawInput = e.target.value;
+    setNomorTelepon(rawInput);
+
+    let normalized = null;
+    try {
+      const phoneNumber = parsePhoneNumberFromString(rawInput, "ID");
+      if (phoneNumber && phoneNumber.isValid()) {
+        normalized = phoneNumber.format("E.164");
+      }
+    } catch (err) {
+      console.error("Error parsing phone number:", err);
+    }
+
+    setNomorTeleponE164(normalized);
+  };
+
+  const handleKataSandiChange = (e) => {
+    setKataSandi(e.target.value);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     if (!isChecked) {
       showToast("Anda harus menyetujui Syarat & Ketentuan (S&K).");
       return;
     }
-    setShowPopup(true);
-  };
+    if (!nomorTeleponE164) {
+      showToast(
+        "Nomor telepon tidak valid. Pastikan format benar (contoh: +6281234567890 atau 081234567890)."
+      );
+      return;
+    }
 
-  const confirmSubmit = () => {
-    setShowPopup(false);
-    setShowuptrue(false);
-
-    let payload = {
-      name: namaLengkap,
-      email: email,
-      phone: nomorTelepon,
-      password: kataSandi,
+    const payload = {
       mode: "POST",
       action: "register",
+      name: namaLengkap.trim(),
+      email: email.trim().toLowerCase(),
+      phone: nomorTeleponE164,
+      password: kataSandi,
     };
 
     fetch(endPoint, {
@@ -112,7 +138,49 @@ const Register = ({ onRegisterSuccess, close }) => {
     })
       .then((res) => res.json())
       .then((response) => {
-        console.log(response);
+        if (response.status === "success") {
+          showToast("Kode OTP telah dikirim!", "success");
+          setTimeout(() => {
+            if (typeof onRegisterSuccess === "function") {
+              onRegisterSuccess({
+                kode: response.kode,
+                name: namaLengkap.trim(),
+                email: email.trim().toLowerCase(),
+                phone: nomorTeleponE164,
+                password: kataSandi,
+              });
+            }
+          }, 1000);
+        } else {
+          showToast(response.message || "Pendaftaran gagal.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        showToast("Terjadi kesalahan jaringan. Silakan coba lagi.");
+      });
+  };
+
+  const confirmSubmit = () => {
+    setShowPopup(false);
+    setShowuptrue(false);
+
+    let payload = {
+      name: namaLengkap.trim(),
+      email: email.trim().toLowerCase(),
+      phone: nomorTeleponE164,
+      password: kataSandi,
+      mode: "POST",
+      action: "generate_otp",
+    };
+
+    fetch(endPoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((response) => {
         if (response.status === "success") {
           showToast(
             "Akun berhasil dibuat! Mengalihkan ke verifikasi...",
@@ -125,8 +193,10 @@ const Register = ({ onRegisterSuccess, close }) => {
             if (typeof onRegisterSuccess === "function") {
               onRegisterSuccess({
                 kode: response.kode,
-                name: response.name,
-                email: response.email,
+                name: namaLengkap.trim(),
+                email: email.trim().toLowerCase(),
+                phone: nomorTeleponE164,
+                password: kataSandi,
               });
             }
           }, 1500);
@@ -228,7 +298,7 @@ const Register = ({ onRegisterSuccess, close }) => {
             />
             <span
               className="text-xs font-jakarta underline cursor-pointer"
-              onClick={() => navigate("/syaratdanketentuan")}
+              onClick={() => setShowSK(true)}
             >
               S&K
             </span>
@@ -272,6 +342,20 @@ const Register = ({ onRegisterSuccess, close }) => {
             <div className="flex gap-[73px] mt-[24px]">
               <Button onClick={confirmSubmit}>Iya</Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showSK && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35">
+          <div className="relative w-full h-[90vh] overflow-auto bg-white rounded-lg">
+            <button
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+              onClick={() => setShowSK(false)}
+            >
+              ✕
+            </button>
+            <SKLayout onBack={() => setShowSK(false)} />
           </div>
         </div>
       )}

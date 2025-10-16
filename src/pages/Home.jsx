@@ -207,20 +207,17 @@ export default function Home() {
           element: "#home",
           intro: "👋 Halo! Selamat datang di halaman utama.",
         },
-        { element: "#iklan", 
-          intro: "🖼️ Ini bagian iklan utama kami." 
-        },
+        { element: "#iklan", intro: "🖼️ Ini bagian iklan utama kami." },
 
-        { element: "#rumah_terdekat", 
-          intro: "🏠 Ini daftar rumah terdekat." },
+        { element: "#rumah_terdekat", intro: "🏠 Ini daftar rumah terdekat." },
         {
           element: "#chatbot",
           intro: "🤖 Ini chatbot yang siap membantu kamu.",
           position: "bottom",
         },
-        { 
-          element: "#hitung_kpr", 
-          intro: "💰 Ini fitur kalkulator KPR." 
+        {
+          element: "#hitung_kpr",
+          intro: "💰 Ini fitur kalkulator KPR.",
         },
       ];
 
@@ -229,13 +226,13 @@ export default function Home() {
           element: "#home",
           intro: "👋 Halo! Selamat datang di halaman utama.",
         },
-        { 
-          element: "#iklan", 
-          intro: "🖼️ Ini bagian iklan utama kami." 
+        {
+          element: "#iklan",
+          intro: "🖼️ Ini bagian iklan utama kami.",
         },
-        { 
-          element: "#rumah_terdekat", 
-          intro: "🏠 Ini daftar rumah terdekat." 
+        {
+          element: "#rumah_terdekat",
+          intro: "🏠 Ini daftar rumah terdekat.",
         },
       ];
 
