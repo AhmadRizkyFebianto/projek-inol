@@ -433,7 +433,7 @@ export default function Home() {
 
         <div id="chatbot" className="mt-30 mx-10 md:block hidden">
           <div className="flex justify-center xl:gap-14 lg:gap-8 md:gap-2 gap-2">
-            <div className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl overflow-hidden bg-gray-100">
+            <div className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl overflow-hidden">
               <Canvas
                 style={{ width: "100%", height: "100%" }}
                 camera={{ position: [0, 0, 3], fov: 40 }}
