@@ -288,10 +288,8 @@ const JualRumah = () => {
 
       setTimeout(() => intro.start(), 800);
 
-      intro.oncomplete(() =>
-        localStorage.setItem("jualrumah_intro_seen", "true")
-      );
-      intro.onexit(() => localStorage.setItem("jualrumah_intro_seen", "true"));
+      intro.oncomplete(() => localStorage.setItem("hasSeenIntroJual", "true"));
+      intro.onexit(() => localStorage.setItem("hasSeenIntroJual", "true"));
     }
   }, []);
 
