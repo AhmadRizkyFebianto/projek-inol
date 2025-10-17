@@ -152,7 +152,7 @@ const JualRumah = () => {
 
   useEffect(() => {
     const hasSeenIntro = localStorage.getItem("isSell");
-    if (!hasRunIntro.current && hasSeenIntro !== "true") {
+    if (!hasRunIntro.current && hasSeenIntro !== "1") {
       const intro = introJs();
       intro.setOptions({
         steps: [

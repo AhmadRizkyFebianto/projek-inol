@@ -46,14 +46,13 @@ export default function Profile(props) {
   const [searchjual, setSearchJual] = useState("");
   const authEmail = localStorage.getItem("auth_email");
 
-  console.log(authEmail);
   const hasRunIntro = useRef(false);
 
   useEffect(() => {
     const hasSeenIntro = localStorage.getItem("isProfile");
 
     // hanya jalankan intro jika belum pernah dilihat
-    if (!hasRunIntro.current && hasSeenIntro !== "true") {
+    if (!hasRunIntro.current && hasSeenIntro !== "1") {
       const intro = introJs();
       intro.setOptions({
         steps: [
