@@ -7,7 +7,7 @@ import { auth, googleProvider } from "../../Firebase/config";
 import { ThreeCircles } from "react-loader-spinner";
 import API from "../../Config/Endpoint";
 
-const Login = ({route,onClose}) => {
+const Login = ({ route, onClose }) => {
   // const endPoint = `${API.endpointlogin}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(kataSandi)}`;
 
   const [loading, setLoading] = useState(false);
@@ -16,6 +16,8 @@ const Login = ({route,onClose}) => {
   const [email, setEmail] = useState("");
   const [kataSandi, setKataSandi] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const authEmail = localStorage.getItem("auth_email");
 
   const handleEmailChange = (newValue) => {
     setEmail(newValue);
@@ -61,11 +63,13 @@ const Login = ({route,onClose}) => {
       if (response.status === "success") {
         alert(`Hello, ${response.user.nama_lengkap}`);
         localStorage.setItem("auth_phone", response.user.nomer_telepon);
-        localStorage.setItem("auth_email",response.user.email);
-        localStorage.setItem("auth_fullname",response.user.nama_lengkap);
-        localStorage.setItem("foto_profil",response.user.image);
+        localStorage.setItem("auth_email", response.user.email);
+        localStorage.setItem("auth_fullname", response.user.nama_lengkap);
+        localStorage.setItem("foto_profil", response.user.image);
+        localStorage.setItem("isProfile", response.user.isProfile);
+        localStorage.setItem("isSell", response.user.isSell);
         localStorage.setItem("tipe_time", new Date().toISOString());
-        window.dispatchEvent(new Event("storage"))
+        window.dispatchEvent(new Event("storage"));
         onClose();
       } else {
         alert(response.message || "Password atau Email Salah");
@@ -131,7 +135,6 @@ const Login = ({route,onClose}) => {
           type="button"
           className="text-xs text-black mt-6 hover:underline"
           onClick={route}
-
         >
           Lupa Kata Sandi?
         </button>

@@ -145,12 +145,14 @@ const JualRumah = () => {
   const [trafficVolumeList, setTrafficVolumeList] = useState([]);
   const [floodingList, setFloodingList] = useState([]);
   const [occupancyList, setOccupancyList] = useState([]);
+  const authEmail = localStorage.getItem("auth_email");
 
   const [isEditMode, setIsEditMode] = useState(false);
+  const hasRunIntro = useRef(false);
 
   useEffect(() => {
-    const hasSeenIntro = localStorage.getItem("hasSeenIntroJual");
-    if (!hasSeenIntro) {
+    const hasSeenIntro = localStorage.getItem("isSell");
+    if (!hasRunIntro.current && hasSeenIntro !== "true") {
       const intro = introJs();
       intro.setOptions({
         steps: [
@@ -288,8 +290,41 @@ const JualRumah = () => {
 
       setTimeout(() => intro.start(), 800);
 
-      intro.oncomplete(() => localStorage.setItem("hasSeenIntroJual", "true"));
-      intro.onexit(() => localStorage.setItem("hasSeenIntroJual", "true"));
+      const saveTooltipStatus = async () => {
+        if (!authEmail) {
+          console.warn("Email kosong, tidak mengirim ke server");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            "https://smataco.my.id/dev/unez/CariRumahAja/routes/user.php",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                mode: "UPDATE",
+                action: "tooltipsSell",
+                email: authEmail,
+              }),
+            }
+          );
+
+          const result = await response.json();
+          console.log("Tooltip jual status saved:", result);
+        } catch (error) {
+          console.error("Failed to save tooltip status:", error);
+        }
+      };
+
+      intro.oncomplete(async () => {
+        localStorage.setItem("isSell", "true");
+        await saveTooltipStatus();
+      });
+      intro.onexit(async () => {
+        localStorage.setItem("isSell", "true");
+        await saveTooltipStatus();
+      });
     }
   }, []);
 

@@ -44,16 +44,16 @@ export default function Profile(props) {
   const [jual, setJual] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchjual, setSearchJual] = useState("");
+  const authEmail = localStorage.getItem("auth_email");
 
+  console.log(authEmail);
   const hasRunIntro = useRef(false);
 
   useEffect(() => {
-    const hasSeenIntro = localStorage.getItem("hasSeenIntroProfile");
+    const hasSeenIntro = localStorage.getItem("isProfile");
 
     // hanya jalankan intro jika belum pernah dilihat
-    if (!hasRunIntro.current && !hasSeenIntro) {
-      hasRunIntro.current = true;
-
+    if (!hasRunIntro.current && hasSeenIntro !== "true") {
       const intro = introJs();
       intro.setOptions({
         steps: [
@@ -93,16 +93,45 @@ export default function Profile(props) {
         intro.start();
       }, 800);
 
+      const saveTooltipStatus = async () => {
+        if (!authEmail) {
+          console.warn("Email kosong, tidak mengirim ke server");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            "https://smataco.my.id/dev/unez/CariRumahAja/routes/user.php",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                mode: "UPDATE",
+                action: "tooltipsProfile",
+                email: authEmail,
+              }),
+            }
+          );
+
+          const result = await response.json();
+          console.log("Tooltip profile status saved:", result);
+        } catch (error) {
+          console.error("Failed to save tooltip status:", error);
+        }
+      };
+
       // Saat user selesai atau skip → simpan status ke localStorage
-      intro.oncomplete(() => {
-        localStorage.setItem("hasSeenIntroProfile", "true");
+      intro.oncomplete(async () => {
+        localStorage.setItem("isProfile", "true");
+        await saveTooltipStatus();
       });
 
-      intro.onexit(() => {
-        localStorage.setItem("hasSeenIntroProfile", "true");
+      intro.onexit(async () => {
+        localStorage.setItem("isProfile", "true");
+        await saveTooltipStatus();
       });
     }
-  }, []);
+  }, [authEmail]);
 
   const maskPhone = (phone) => {
     if (!phone) return "";
@@ -174,6 +203,9 @@ export default function Profile(props) {
       localStorage.removeItem("auth_fullname");
       localStorage.removeItem("auth_phone");
       localStorage.removeItem("foto_profil");
+      localStorage.removeItem("isProfile");
+      localStorage.removeItem("isSell");
+      window.dispatchEvent(new Event("storage"));
 
       setUser(null);
       setProfile({ nama: "", lokasi: "", email: "", phone: "" });
@@ -185,6 +217,9 @@ export default function Profile(props) {
       localStorage.removeItem("auth_fullname");
       localStorage.removeItem("auth_phone");
       localStorage.removeItem("foto_profil");
+      localStorage.removeItem("isProfile");
+      localStorage.removeItem("isSell");
+      window.dispatchEvent(new Event("storage"));
       navigate("/");
     }
   };

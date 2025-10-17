@@ -23,6 +23,12 @@ export default function ProtectedRoute({ children }) {
         .then((res) => res.json())
         .then((response) => {
           if (response.status === "success") {
+            localStorage.removeItem("auth_email");
+            localStorage.removeItem("auth_fullname");
+            localStorage.removeItem("auth_phone");
+            localStorage.removeItem("foto_profil");
+            localStorage.removeItem("isProfile");
+            localStorage.removeItem("isSell");
             showToast("Berhasil Logout!", "success");
           }
         });
@@ -35,11 +41,16 @@ export default function ProtectedRoute({ children }) {
       const loginDate = new Date(loginTime);
       const now = new Date();
       const diff = now - loginDate;
-      const oneDays = 1 * 60 * 1000;
+      const oneDays = 10 * 60 * 1000;
 
       if (diff >= oneDays) {
         handleLogout();
-        localStorage.clear();
+        localStorage.removeItem("auth_email");
+        localStorage.removeItem("auth_fullname");
+        localStorage.removeItem("auth_phone");
+        localStorage.removeItem("foto_profil");
+        localStorage.removeItem("isProfile");
+        localStorage.removeItem("isSell");
         alert("Sesi login Anda telah kedaluwarsa. Silakan login kembali.");
         window.location.href = "/";
       }

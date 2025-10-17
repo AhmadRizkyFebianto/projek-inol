@@ -15,6 +15,12 @@ const API = {
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=get_kota",
   endpointFilter:
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/filter.php?mode=filter_properti",
+  endpointLogout:
+    "https://smataco.my.id/dev/unez/CariRumahAja/routes/user.php?mode=logout",
+  endpointBookmark:
+    "https://smataco.my.id/dev/unez/CariRumahAja/routes/bookmark.php",
+  endpointjualrumah:
+    "https://smataco.my.id/dev/unez/CariRumahAja/routes/jualRumah.php",
 };
 
 export default API;
