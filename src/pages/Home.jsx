@@ -29,6 +29,8 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Suspense } from "react";
 import introJs from "intro.js";
 import "intro.js/introjs.css";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -58,6 +60,24 @@ export default function Home() {
   const KeyMaps = "AIzaSyDtRAmlhx3Ada5pVl5ilzeHP67TLxO6pyo";
   const navigate = useNavigate();
   const hasRunTour = useRef(false);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1200,
+      easing: "ease-in-out",
+      once: false,
+    });
+
+    const handleScroll = () => {
+      AOS.refresh();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   let ApiContribution =
     "https://smataco.my.id/dev/unez/CariRumahAja/routes/contribution.php?mode=nearby&latitude=-6.208763&longitude=106.845599";
@@ -330,7 +350,12 @@ export default function Home() {
         </div>
 
         <div id="rumah_terdekat" className="mt-30 mx-10">
-          <div className="flex justify-between items-center">
+          <div
+            className="flex justify-between items-center"
+            data-aos="fade-up"
+            data-aos-delay="500"
+            data-aos-offset="200"
+          >
             <div className="w-1 h-1 md:block hidden" />
             <div className="">
               <h3 className="font-semibold xl:text-2xl lg:text-2xl md:text-2xl text-lg">
@@ -354,7 +379,12 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <div className="flex justify-center mt-20">
+          <div
+            className="flex justify-center mt-20"
+            data-aos="fade-up"
+            data-aos-delay="500"
+            data-aos-offset="200"
+          >
             {rumahTerdekat.error ? (
               <p className="text-gray-600 md:text-2xl text-lg text-center">
                 Tidak ada rumah ditemukan di wilayah Anda.
@@ -433,7 +463,12 @@ export default function Home() {
 
         <div id="chatbot" className="mt-30 mx-10 md:block hidden">
           <div className="flex justify-center xl:gap-14 lg:gap-8 md:gap-2 gap-2">
-            <div className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl overflow-hidden">
+            <div
+              className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl overflow-hidden"
+              data-aos="fade-right"
+              data-aos-delay="500"
+              data-aos-offset="200"
+            >
               <Canvas
                 style={{ width: "100%", height: "100%" }}
                 camera={{ position: [0, 0, 3], fov: 40 }}
@@ -446,7 +481,12 @@ export default function Home() {
                 <OrbitControls enableZoom={false} enablePan={false} />
               </Canvas>
             </div>
-            <div className="flex justify-center items-center text-center">
+            <div
+              className="flex justify-center items-center text-center"
+              data-aos="fade-left"
+              data-aos-delay="500"
+              data-aos-offset="200"
+            >
               <div className="xl:space-y-20 space-y-8">
                 <h3 className="xl:text-3xl lg:text-3xl text-xl xl:w-[600px] w-auto">
                   Mau cari rekomendasi rumah yang cepat sesuai konsepmu?
@@ -464,7 +504,12 @@ export default function Home() {
 
         <div id="hitung_kpr" className="my-30 mx-10 md:block hidden">
           <div className="flex justify-center xl:gap-14 lg:gap-8 md:gap-2 gap-2">
-            <div className="flex justify-center items-center text-center">
+            <div
+              className="flex justify-center items-center text-center"
+              data-aos="fade-right"
+              data-aos-delay="500"
+              data-aos-offset="200"
+            >
               <div className="xl:space-y-20 space-y-8">
                 <h3 className="xl:text-3xl lg:text-3xl text-xl xl:w-[600px] w-auto">
                   Mau hitung KPR rumah yang cepat dan sesuai?
@@ -477,7 +522,11 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div>
+            <div
+              data-aos="fade-left"
+              data-aos-delay="500"
+              data-aos-offset="200"
+            >
               <img
                 ref={imgRefDesktop}
                 className="xl:w-[486px] lg:w-[386px] w-[286px] xl:h-[409px] lg:h-[309px] h-[209px] rounded-2xl cursor-pointer"
